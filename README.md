@@ -2,4 +2,4 @@
 The set of stream ciphers written on Swift
 
 
-### Sponosored by KeePassium
+### Sponsored by [KeePassium](https://github.com/keepassium)
