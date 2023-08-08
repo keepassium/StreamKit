@@ -1,5 +1,5 @@
 # StreamKit
-The set of stream ciphers written on Swift
+The set of ciphers written on Swift
 
 
 ### Sponsored by [KeePassium](https://github.com/keepassium)
