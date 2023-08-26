@@ -108,11 +108,11 @@ extension GzipStreamTests {
         try decompressStream.open()
         
         var result = Array<UInt8>()
-        let bufLen = 1<<16
-        var readBuffer = Array<UInt8>(repeating: 0, count: bufLen)
+        let tmpBufLen = 1<<16
+        var tmpBuffer = Array<UInt8>(repeating: 0, count: tmpBufLen)
         while decompressStream.hasBytesAvailable {
-            let readLen = try decompressStream.read(&readBuffer, maxLength: bufLen)
-            result.append(contentsOf: readBuffer.prefix(readLen))
+            let readLen = try decompressStream.read(&tmpBuffer, maxLength: tmpBufLen)
+            result.append(contentsOf: tmpBuffer.prefix(readLen))
         }
         return result
     }
