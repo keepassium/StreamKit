@@ -5,7 +5,7 @@ This open-source Swift library offers a comprehensive collection of cryptographi
 - [FileStream](FileStream.md)
 - [GzipStream](GzipStream.md)
 - [AesStream](AesStream.md)
-- [ChaCha20Stream](ChaCha20Stream.md)
+- [Salsa20Stream](Salsa20Stream.md)
 - [ChaCha20Stream](ChaCha20Stream.md)
 - [TwoFishStream](TwoFishStream.md)
 
