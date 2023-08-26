@@ -1,0 +1,5 @@
+module Core {
+    header "../Headers/Core-Bridging-Header.h"
+    link "Core"
+    export * 
+}

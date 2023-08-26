@@ -11,13 +11,28 @@ let package = Package(
             name: "StreamKit",
             targets: ["StreamKit"]),
     ],
+    dependencies: [
+        .package(path: "./Core")
+    ],
     targets: [
         // Targets are the basic building blocks of a package, defining a module or a test suite.
         // Targets can depend on other targets in this package and products from dependencies.
         .target(
-            name: "StreamKit"),
+            name: "StreamKit",
+            dependencies: [
+                .product(name: "Core", package: "Core")
+            ],
+            path: "Sources"),
         .testTarget(
             name: "StreamKitTests",
-            dependencies: ["StreamKit"]),
+            dependencies: ["StreamKit"],
+            path: "Tests",
+            resources: [
+                .copy("Resources/1MB"),
+                .copy("Resources/16B"),
+                .copy("Resources/PlainText"),
+                .copy("Resources/PlainText.gz"),
+            ]),
     ]
+        
 )
