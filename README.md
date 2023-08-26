@@ -48,6 +48,125 @@ try compressingStream.write(tmpBuffer, length: readLen)
 try fileOutputStream.close()
 ```
 
+## How to perform encrypting using `AesOutputStream`
+```swift
+...
+let encryptingStream = AesOutputStream(writingTo: fileOutputStream,
+                                                   key: key,
+                                                   iv: iv)
+try encryptingStream.open()
+                    
+try encryptingStream.write("Hello world", ofEncoding: .utf8)
+try encryptingStream.close()
+...
+```
+
+## How to perform decrypting using `AesInputStream`
+```swift
+...
+let decryptingStream = AesInputStream(readingFrom: inputFileStream,
+                                              key: key,
+                                              iv: iv)
+try decryptingStream.open()
+        
+let tmpBufferLen = 1<<16 // 65KB buffer
+var tmpBuffer = Array<UInt8>(repeating: 0, count: tmpBufferLen)
+while decryptingStream.hasBytesAvailable {
+        let readLen = try decryptingStream.read(&tmpBuffer, maxLength: tmpBufferLen)
+        // process buffer
+}
+        
+decryptingStream.close()
+...
+```
+
+## How to perform encrypting using `Salsa20OutputStream`
+```swift
+...
+let encryptingStream = Salsa20OutputStream(writingTo: fileOutputStream,
+                                                   key: key,
+                                                   iv: iv)
+try encryptingStream.open()
+                    
+try encryptingStream.write("Hello world", ofEncoding: .utf8)
+try encryptingStream.close()
+...
+```
+
+## How to perform decrypting using `Salsa20InputStream`
+```swift
+...
+let decryptingStream = Salsa20InputStream(readingFrom: inputFileStream,
+                                              key: key,
+                                              iv: iv)
+try decryptingStream.open()
+        
+let decryptedData = try decryptingStream.readToEnd()
+        
+decryptingStream.close()
+...
+```
+
+## How to perform encrypting using `ChaCha20OutputStream`
+```swift
+...
+let encryptingStream = ChaCha20OutputStream(writingTo: fileOutputStream,
+                                                   key: key,
+                                                   iv: iv)
+try encryptingStream.open()
+                    
+try encryptingStream.write("Hello world", ofEncoding: .utf8)
+try encryptingStream.close()
+...
+```
+
+## How to perform decrypting using `ChaCha20InputStream`
+```swift
+...
+let decryptingStream = ChaCha20InputStream(readingFrom: inputFileStream,
+                                              key: key,
+                                              iv: iv)
+try decryptingStream.open()
+        
+let decryptedData = try decryptingStream.readToEnd()
+        
+decryptingStream.close()
+...
+```
+
+
+## How to perform encrypting using `TwoFishOutputStream`
+```swift
+...
+let encryptingStream = TwoFishOutputStream(writingTo: fileOutputStream,
+                                                   key: key,
+                                                   iv: iv)
+try encryptingStream.open()
+                    
+try encryptingStream.write("Hello world", ofEncoding: .utf8)
+try encryptingStream.close()
+...
+```
+
+## How to perform decrypting using `TwoFishInputStream`
+```swift
+...
+let decryptingStream = TwoFishInputStream(readingFrom: inputFileStream,
+                                              key: key,
+                                              iv: iv)
+try decryptingStream.open()
+        
+let tmpBufferLen = 1<<16 // 65KB buffer
+var tmpBuffer = Array<UInt8>(repeating: 0, count: tmpBufferLen)
+while decryptingStream.hasBytesAvailable {
+        let readLen = try decompressingStream.read(&tmpBuffer, maxLength: tmpBufferLen)
+        // process or store bytes in `tmpBuffer`
+}
+        
+decryptingStream.close()
+...
+```
+
 # How to use it
 For example it's possible to encrypt some data and simulteniously write the encrypted result to a file. 
 ```swift
