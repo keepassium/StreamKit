@@ -11,7 +11,7 @@ let package = Package(
             targets: ["StreamKit"]),
     ],
     dependencies: [
-        .package(path: "Core")
+        .package(name: "Core", path: "Core")
     ],
     targets: [
         .target(
