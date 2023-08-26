@@ -15,14 +15,12 @@ let package = Package(
             targets: ["StreamKit"]),
     ],
     dependencies: [
-        .package(name: "Core", path: "./Core"),
+        .package(path: "Core"),
     ],
     targets: [
         .target(
             name: "StreamKit",
-            dependencies: [
-                .product(name: "Core", package: "Core"),
-            ],
+            dependencies: ["Core"],
             path: "Sources"),
         .testTarget(
             name: "StreamKitTests",
