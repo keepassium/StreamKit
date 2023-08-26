@@ -1,8 +1,32 @@
-    The `windowBits` parameter is the base two logarithm of the window size
-(the size of the history buffer).  It should be in the range 8..15 for this
-version of the library.  Larger values of this parameter result in better
-compression at the expense of memory usage.
+# GzipOutputStream
+Compress the data and write to a file
+```swift
+...
+let compressStream = GzipOutputStream(writingTo: fileOutputStream)
+try compressStream.open()
+try compressStream.write("Hello world", ofEncoding: .utf8)
+try! compressStream.close()
+...
+```
 
+# GzipInputStream
+Decompress the data
+```swift
+...
+let decompressStream = GzipInputStream(readingFrom: fileInputStream)
+try decompressStream.open()
+        
+var result = Array<UInt8>()
+let tmpBufLen = 1<<16
+var tmpBuffer = Array<UInt8>(repeating: 0, count: tmpBufLen)
+while decompressStream.hasBytesAvailable {
+    let readLen = try decompressStream.read(&tmpBuffer, maxLength: tmpBufLen)
+    result.append(contentsOf: tmpBuffer.prefix(readLen))
+}
+...
+```
+
+# Configuration parameters
 `windowBits` is used to control the compression level and the format of the 
     compressed data. According to the zlib manual, the windowBits parameter can 
     have the following values:
