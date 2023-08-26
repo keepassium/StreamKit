@@ -4,7 +4,7 @@ ChaCha20 is a stream cipher with symmetric secret key. It works on data blocks o
 Initialization vector(`iv`) is required of 12 bytes length.</br>
 The stream cipher algorithm performs 20 rounds of computations in its hash function.
 
-## Enrypt data using ChaCha20 cipher and store to a file
+## Encrypt data using ChaCha20 cipher and store to a file
 ```swift
 let encryptingStream = ChaCha20OutputStream(writingTo: fileOutputStream,
                                             key: key,
@@ -14,7 +14,7 @@ try encryptingStream.write(buffer, length: len)
 try encryptingStream.close()
 ```
 
-## Read a file chunk by chunk that is encrypted using ChaCha20 cipher 
+## Read an encrypted file chunk by chunk 
 ```swift
 let decryptionStream = ChaCha20InputStream(readingFrom: fileInputStream,
                                                    key: key,
