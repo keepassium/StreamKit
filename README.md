@@ -1,6 +1,10 @@
 # StreamKit
 This open-source Swift library offers a comprehensive collection of cryptographic algorithms. These ciphers can be structured into chains, facilitating the seamless flow of output from one cipher stream to another. This architecture enables concurrent tasks, such as encrypting data while writing the encrypted result to a file. Integrate "StreamKit" into your projects to efficiently utilize these cryptographic functionalities.
 
+# How to add the library to a project
+In the Xcode press `File` -> `Add Packages` -> In the search field insert `https://github.com/iharkatkavets/StreamKit.git`.
+It might require to setup `GitHub Account` in the Xcode
+
 
 # How to use it
 For example it's possible to encrypt some data and simulteniously write the encrypted result to a file. 
