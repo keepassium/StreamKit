@@ -6,7 +6,6 @@ import PackageDescription
 let package = Package(
     name: "StreamKit",
     products: [
-        // Products define the executables and libraries a package produces, making them visible to other packages.
         .library(
             name: "StreamKit",
             targets: ["StreamKit"]),
@@ -15,8 +14,6 @@ let package = Package(
         .package(path: "./Core")
     ],
     targets: [
-        // Targets are the basic building blocks of a package, defining a module or a test suite.
-        // Targets can depend on other targets in this package and products from dependencies.
         .target(
             name: "StreamKit",
             dependencies: [
@@ -34,5 +31,5 @@ let package = Package(
                 .copy("Resources/PlainText.gz"),
             ]),
     ]
-        
+    
 )
