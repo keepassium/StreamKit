@@ -13,6 +13,12 @@ This open-source Swift library offers a comprehensive collection of cryptographi
 In the Xcode press `File` -> `Add Packages` -> In the search field insert `https://github.com/iharkatkavets/StreamKit.git`.
 It might require to setup `GitHub Account` in the Xcode
 
+# How to use the library in the project
+First import the library
+```swift
+import StreamKit
+```
+
 ## How to read a file using `FileInputStream`
 ```swift
 let fileURL: URL = ...
