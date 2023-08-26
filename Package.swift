@@ -5,6 +5,10 @@ import PackageDescription
 
 let package = Package(
     name: "StreamKit",
+    platforms: [
+        .macOS(.v12),
+        .iOS(.v13)
+    ],
     products: [
         .library(
             name: "StreamKit",
