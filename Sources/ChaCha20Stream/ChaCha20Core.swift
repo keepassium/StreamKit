@@ -25,8 +25,8 @@
 
 import Foundation
 
-let ChaCha20IVSize = 12
-let ChaCha20KeySize = 32
+public let ChaCha20KeySize = 32
+public let ChaCha20IVSize = 12
 
 public struct ChaCha20StreamError: LocalizedError {
     public enum Kind {

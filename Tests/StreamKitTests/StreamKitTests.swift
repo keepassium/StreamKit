@@ -41,7 +41,7 @@ final class StreamKitTests: XCTestCase {
     
     func testEncryptingDecrypting1MBFileUsingSalsa20Streams() throws {
         let key = genBufferOfLen(32)
-        let iv = genBufferOfLen(8)
+        let iv = genBufferOfLen(Salsa20IVSize)
         
         let originalFileURL = fileURL("1MB")!
         let encryptedFileURL = try encryptFileUsingSalsa20(originalFileURL, key, iv)
@@ -53,7 +53,7 @@ final class StreamKitTests: XCTestCase {
     
     func testCompressEncryptDecryptDecompress1MBFileUsingSalsa20Stream() throws {
         let key = genBufferOfLen(32)
-        let iv = genBufferOfLen(8)
+        let iv = genBufferOfLen(Salsa20IVSize)
         
         let originalFileURL = fileURL("1MB")!
         let encryptedFileURL = try compressAndEncryptFileUsingSalsa20(originalFileURL, key, iv)
@@ -65,7 +65,7 @@ final class StreamKitTests: XCTestCase {
     
     func testEncryptingDecrypting1MBFileUsingChaCha20Streams() throws {
         let key = genBufferOfLen(32)
-        let iv = genBufferOfLen(12)
+        let iv = genBufferOfLen(ChaCha20IVSize)
         
         let originalFileURL = fileURL("1MB")!
         let encryptedFileURL = try encryptFileUsingChaCha20(originalFileURL, key, iv)
@@ -77,7 +77,7 @@ final class StreamKitTests: XCTestCase {
     
     func testCompressEncryptDecryptDecompress1MBFileUsingChaCha20Stream() throws {
         let key = genBufferOfLen(32)
-        let iv = genBufferOfLen(12)
+        let iv = genBufferOfLen(ChaCha20IVSize)
         
         let originalFileURL = fileURL("1MB")!
         let encryptedFileURL = try compressAndEncryptFileUsingChaCha20(originalFileURL, key, iv)
@@ -89,7 +89,7 @@ final class StreamKitTests: XCTestCase {
     
     func testEncryptingDecrypting1MBFileUsingAesStream() throws {
         let key = genBufferOfLen(32)
-        let iv = genBufferOfLen(16)
+        let iv = genBufferOfLen(AesIVSize)
         
         let originalFileURL = fileURL("1MB")!
         let encryptedFileURL = try encryptFileUsingAes(originalFileURL, key, iv)
@@ -101,7 +101,7 @@ final class StreamKitTests: XCTestCase {
     
     func testCompressEncryptDecryptDecompress1MBFileUsingAesStream() throws {
         let key = genBufferOfLen(32)
-        let iv = genBufferOfLen(16)
+        let iv = genBufferOfLen(AesIVSize)
         
         let originalFileURL = fileURL("1MB")!
         let encryptedFileURL = try compressAndEncryptFileUsingAes(originalFileURL, key, iv)
@@ -128,6 +128,31 @@ final class StreamKitTests: XCTestCase {
         XCTAssertNotEqual(md5(originalFileURL), md5(compressedFileURL))
         XCTAssertEqual(md5(originalFileURL), md5(decompressedFileURL))
     }
+    
+    func testEncryptingDecrypting1MBFileUsingTwoFishStreams() throws {
+        let key = genBufferOfLen(32)
+        let iv = genBufferOfLen(TwoFishIVSize)
+        
+        let originalFileURL = fileURL("1MB")!
+        let encryptedFileURL = try encryptFileUsingTwoFish(originalFileURL, key, iv)
+        let decryptedFileURL = try decryptFileUsingTwoFish(encryptedFileURL, key, iv)
+        
+        XCTAssertNotEqual(md5(originalFileURL), md5(encryptedFileURL))
+        XCTAssertEqual(md5(originalFileURL), md5(decryptedFileURL))
+    }
+    
+    func testCompressEncryptDecryptDecompress1MBFileUsingTwoFishStream() throws {
+        let key = genBufferOfLen(32)
+        let iv = genBufferOfLen(TwoFishIVSize)
+        
+        let originalFileURL = fileURL("1MB")!
+        let encryptedFileURL = try compressAndEncryptFileUsingTwoFish(originalFileURL, key, iv)
+        let decryptedFileURL = try decryptAndDecompressFileUsingTwoFish(encryptedFileURL, key, iv)
+        
+        XCTAssertNotEqual(md5(originalFileURL), md5(encryptedFileURL))
+        XCTAssertEqual(md5(originalFileURL), md5(decryptedFileURL))
+    }
+    
 }
 
 extension StreamKitTests {
@@ -143,7 +168,7 @@ extension StreamKitTests {
                                                    key: key,
                                                    iv: iv)
         try encryptingStream.open()
-                
+        
         let tmpBufferLen = 1<<16 // 65KB buffer
         var tmpBuffer = Array<UInt8>(repeating: 0, count: tmpBufferLen)
         while inputFileStream.hasBytesAvailable {
@@ -204,7 +229,7 @@ extension StreamKitTests {
         
         let compressingStream = GzipOutputStream(writingTo: encryptingStream)
         try compressingStream.open()
-                
+        
         let tmpBufferLen = 1<<16 // 65KB buffer
         var tmpBuffer = Array<UInt8>(repeating: 0, count: tmpBufferLen)
         while inputFileStream.hasBytesAvailable {
@@ -258,7 +283,7 @@ extension StreamKitTests {
                                                     key: key,
                                                     iv: iv)
         try encryptingStream.open()
-                
+        
         let tmpBufferLen = 1<<16 // 65KB buffer
         var tmpBuffer = Array<UInt8>(repeating: 0, count: tmpBufferLen)
         while inputFileStream.hasBytesAvailable {
@@ -315,7 +340,7 @@ extension StreamKitTests {
         
         let compressingStream = GzipOutputStream(writingTo: encryptingStream)
         try compressingStream.open()
-                
+        
         let tmpBufferLen = 1<<16 // 65KB buffer
         var tmpBuffer = Array<UInt8>(repeating: 0, count: tmpBufferLen)
         while inputFileStream.hasBytesAvailable {
@@ -373,7 +398,7 @@ extension StreamKitTests {
                                                key: key,
                                                iv: iv)
         try encryptingStream.open()
-                
+        
         let tmpBufferLen = 1<<16 // 65KB buffer
         var tmpBuffer = Array<UInt8>(repeating: 0, count: tmpBufferLen)
         while inputFileStream.hasBytesAvailable {
@@ -404,7 +429,7 @@ extension StreamKitTests {
         
         let compressingStream = GzipOutputStream(writingTo: encryptingStream)
         try compressingStream.open()
-                
+        
         let tmpBufferLen = 1<<16 // 65KB buffer
         var tmpBuffer = Array<UInt8>(repeating: 0, count: tmpBufferLen)
         while inputFileStream.hasBytesAvailable {
@@ -485,7 +510,7 @@ extension StreamKitTests {
         
         let compressingStream = GzipOutputStream(writingTo: outputFileStream)
         try compressingStream.open()
-                
+        
         let tmpBufferLen = 1<<16 // 65KB buffer
         var tmpBuffer = Array<UInt8>(repeating: 0, count: tmpBufferLen)
         while inputFileStream.hasBytesAvailable {
@@ -523,4 +548,120 @@ extension StreamKitTests {
         inputFileStream.close()
         return decompressedFileURL
     }
+    
+    func encryptFileUsingTwoFish(_ originalFileURL: URL, _ key: [UInt8], _ iv: [UInt8]) throws -> URL {
+        let inputFileStream = FileInputStream(with: try! FileHandle(forReadingFrom: originalFileURL))
+        try inputFileStream.open()
+        
+        let encryptedFileURL = createTmpFileURL(Self.tmpDir)
+        let outputFileStream = FileOutputStream(with: try! FileHandle(forWritingTo: encryptedFileURL))
+        try outputFileStream.open()
+        
+        let encryptingStream = TwoFishOutputStream(writingTo: outputFileStream,
+                                                   key: key,
+                                                   iv: iv)
+        try encryptingStream.open()
+        
+        let tmpBufferLen = 1<<16 // 65KB buffer
+        var tmpBuffer = Array<UInt8>(repeating: 0, count: tmpBufferLen)
+        while inputFileStream.hasBytesAvailable {
+            let readLen = inputFileStream.read(&tmpBuffer, maxLength: tmpBufferLen)
+            try encryptingStream.write(tmpBuffer, length: readLen)
+        }
+        
+        try encryptingStream.close()
+        try outputFileStream.close()
+        inputFileStream.close()
+        
+        return encryptedFileURL
+    }
+    
+    func decryptFileUsingTwoFish(_ encryptedFileURL: URL, _ key: [UInt8], _ iv: [UInt8]) throws -> URL {
+        let inputFileStream = FileInputStream(with: try! FileHandle(forReadingFrom: encryptedFileURL))
+        try inputFileStream.open()
+        
+        let decryptedFileURL = createTmpFileURL(Self.tmpDir)
+        let outputFileStream = FileOutputStream(with: try! FileHandle(forWritingTo: decryptedFileURL))
+        try outputFileStream.open()
+        
+        let decryptingStream = TwoFishInputStream(readingFrom: inputFileStream,
+                                                  key: key,
+                                                  iv: iv)
+        try decryptingStream.open()
+        
+        let tmpBufferLen = 1<<16 // 65KB buffer
+        var tmpBuffer = Array<UInt8>(repeating: 0, count: tmpBufferLen)
+        while decryptingStream.hasBytesAvailable {
+            let readLen = try decryptingStream.read(&tmpBuffer, maxLength: tmpBufferLen)
+            try outputFileStream.write(tmpBuffer, length: readLen)
+        }
+        
+        decryptingStream.close()
+        try outputFileStream.close()
+        inputFileStream.close()
+        return decryptedFileURL
+    }
+    
+    func compressAndEncryptFileUsingTwoFish(_ originalFileURL: URL, _ key: [UInt8], _ iv: [UInt8]) throws -> URL {
+        let inputFileStream = FileInputStream(with: try! FileHandle(forReadingFrom: originalFileURL))
+        try inputFileStream.open()
+        inputFileStream.close()
+        
+        let encryptedFileURL = createTmpFileURL(Self.tmpDir)
+        let outputFileStream = FileOutputStream(with: try! FileHandle(forWritingTo: encryptedFileURL))
+        try outputFileStream.open()
+        
+        let encryptingStream = TwoFishOutputStream(writingTo: outputFileStream,
+                                                   key: key,
+                                                   iv: iv)
+        try encryptingStream.open()
+        
+        let compressingStream = GzipOutputStream(writingTo: encryptingStream)
+        try compressingStream.open()
+                
+        let tmpBufferLen = 1<<16 // 65KB buffer
+        var tmpBuffer = Array<UInt8>(repeating: 0, count: tmpBufferLen)
+        while inputFileStream.hasBytesAvailable {
+            let readLen = inputFileStream.read(&tmpBuffer, maxLength: tmpBufferLen)
+            try compressingStream.write(tmpBuffer, length: readLen)
+        }
+        
+        try compressingStream.close()
+        try encryptingStream.close()
+        try outputFileStream.close()
+        inputFileStream.close()
+        
+        return encryptedFileURL
+    }
+    
+    func decryptAndDecompressFileUsingTwoFish(_ encryptedFileURL: URL, _ key: [UInt8], _ iv: [UInt8]) throws -> URL {
+        let inputFileStream = FileInputStream(with: try! FileHandle(forReadingFrom: encryptedFileURL))
+        try inputFileStream.open()
+        
+        let decryptedFileURL = createTmpFileURL(Self.tmpDir)
+        let outputFileStream = FileOutputStream(with: try! FileHandle(forWritingTo: decryptedFileURL))
+        try outputFileStream.open()
+        
+        let decryptingStream = TwoFishInputStream(readingFrom: inputFileStream,
+                                                  key: key,
+                                                  iv: iv)
+        try decryptingStream.open()
+        
+        let decompressingStream = GzipInputStream(readingFrom: decryptingStream)
+        try decompressingStream.open()
+        
+        let tmpBufferLen = 1<<16 // 65KB buffer
+        var tmpBuffer = Array<UInt8>(repeating: 0, count: tmpBufferLen)
+        while decryptingStream.hasBytesAvailable {
+            let readLen = try decompressingStream.read(&tmpBuffer, maxLength: tmpBufferLen)
+            try outputFileStream.write(tmpBuffer, length: readLen)
+        }
+        
+        decompressingStream.close()
+        decryptingStream.close()
+        try outputFileStream.close()
+        inputFileStream.close()
+        return decryptedFileURL
+    }
+    
 }

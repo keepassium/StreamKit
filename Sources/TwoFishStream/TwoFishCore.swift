@@ -25,7 +25,7 @@
 
 import Foundation
 
-let TwoFishIVSize = 16
+public let TwoFishIVSize = 16
 
 public struct TwoFishStreamError: LocalizedError {
     public enum Kind {

@@ -25,9 +25,9 @@
 
 import Foundation
 
-let Salsa20IVSize = 8
-let Salsa20KeySize128 = 16
-let Salsa20KeySize256 = 32
+public let Salsa20KeySize128 = 16
+public let Salsa20KeySize256 = 32
+public let Salsa20IVSize = 8
 
 public struct Salsa20StreamError: LocalizedError {
     public enum Kind {

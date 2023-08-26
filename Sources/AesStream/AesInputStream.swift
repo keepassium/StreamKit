@@ -41,7 +41,6 @@ public final class AesInputStream: InputStream {
     private var decryptedBufferAvailableLen: Int
     private var status: Int32 = 0
     private let options: AesOptions
-    private let blockSize = 16
     
     public init(readingFrom nestedStream: InputStream,
                 key: [UInt8],
@@ -72,7 +71,7 @@ public final class AesInputStream: InputStream {
         guard !isOpen else { fatalError("The stream can be opened only once") }
         isOpen = true
         
-        guard iv.count == blockSize else {
+        guard iv.count == AesIVSize else {
             throw AesStreamError(kind: .ivSizeError)
         }
         

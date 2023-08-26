@@ -26,6 +26,8 @@
 import Foundation
 import CommonCrypto
 
+public let AesIVSize = 16
+
 public typealias AesOptions = Int
 public extension AesOptions {
     static let CBCMode = 0

@@ -38,7 +38,6 @@ public final class AesOutputStream: OutputStream {
     private var isOpen = false
     private var status: Int32 = 0
     private let options: AesOptions
-    private let blockSize = 16
     
     public init(writingTo outputStream: OutputStream,
                 key: [UInt8],
@@ -66,7 +65,7 @@ public final class AesOutputStream: OutputStream {
         guard !isOpen else { fatalError("The stream can be opened only once") }
         isOpen = true
         
-        guard iv.count == blockSize else {
+        guard iv.count == AesIVSize else {
             throw AesStreamError(kind: .ivSizeError)
         }
         
