@@ -5,23 +5,19 @@ import PackageDescription
 
 let package = Package(
     name: "StreamKit",
-    platforms: [
-        .macOS(.v12),
-        .iOS(.v13)
-    ],
     products: [
         .library(
             name: "StreamKit",
             targets: ["StreamKit"]),
-    ],
-    dependencies: [
-        .package(path: "Core"),
     ],
     targets: [
         .target(
             name: "StreamKit",
             dependencies: ["Core"],
             path: "Sources"),
+        .target(
+            name: "Core",
+            path: "Core"),
         .testTarget(
             name: "StreamKitTests",
             dependencies: ["StreamKit"],
