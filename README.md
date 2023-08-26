@@ -231,5 +231,5 @@ inputFileStream.close()
 
 ```
 
-
-### Sponsored by [KeePassium](https://github.com/keepassium)
+# Sponsorship
+### The library was developed in collaboration with [KeePassium](https://github.com/keepassium)
