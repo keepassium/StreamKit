@@ -52,7 +52,7 @@ final class FileStreamTests: XCTestCase {
             try outputFileStream.write(tmpBuffer, length: readLen)
         }
         
-        inputFileStream.close()
+        try inputFileStream.close()
         try outputFileStream.close()
         XCTAssertEqual(md5(inFileURL), md5(outputFileURL))
     }
@@ -62,10 +62,7 @@ final class FileStreamTests: XCTestCase {
         let inFileHandle = try! FileHandle(forReadingFrom: inFileURL)
         let inputFileStream = FileInputStream(with: inFileHandle)
         try inputFileStream.open()
-        defer {
-            inputFileStream.close()
-        }
-        
+
         let tmpBufferLen = 1<<16 // 65KB buffer
         var tmpBuffer = Array<UInt8>(repeating: 0, count: tmpBufferLen)
         
@@ -73,6 +70,8 @@ final class FileStreamTests: XCTestCase {
         XCTAssertTrue(inputFileStream.hasBytesAvailable)
         XCTAssertEqual(0, inputFileStream.read(&tmpBuffer, maxLength: 16))
         XCTAssertFalse(inputFileStream.hasBytesAvailable)
+        
+        try inputFileStream.close()
     }
     
     override class func tearDown() {

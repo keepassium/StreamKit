@@ -40,5 +40,5 @@ public final class BufferOutputStream: OutputStream {
         buffer.append(contentsOf: UnsafeBufferPointer(start: fromBuffer, count: length))
     }
 
-    public func close() throws {}
+    public func close() {}
 }

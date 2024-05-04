@@ -122,7 +122,7 @@ extension Salsa20CryptorTests {
         try encryptingStream.close()
         
         let resultData = dataOutputStream.buffer
-        try dataOutputStream.close()
+        dataOutputStream.close()
         return resultData
     }
     

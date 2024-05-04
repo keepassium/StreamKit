@@ -32,7 +32,7 @@ final class BufferOutputStreamTests: XCTestCase {
         try outStream.open()
         try outStream.write(&buffer, length: buffer.count)
         XCTAssertEqual(outStream.buffer, buffer)
-        try outStream.close()
+        outStream.close()
     }
     
     func testWriteDataOfLenghtUpTo_1Kb() throws {

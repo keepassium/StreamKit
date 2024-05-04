@@ -126,7 +126,7 @@ extension AesStreamTests {
         try encryptingStream.close()
         
         let resultData = dataOutputStream.buffer
-        try dataOutputStream.close()
+        dataOutputStream.close()
         return resultData
     }
     

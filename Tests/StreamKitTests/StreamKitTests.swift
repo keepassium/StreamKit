@@ -178,8 +178,8 @@ extension StreamKitTests {
         
         try encryptingStream.close()
         try outputFileStream.close()
-        inputFileStream.close()
-        
+        try inputFileStream.close()
+
         return encryptedFileURL
     }
     
@@ -206,18 +206,18 @@ extension StreamKitTests {
             try outputFileStream.write(tmpBuffer, length: readLen)
         }
         
-        decompressingStream.close()
+        try decompressingStream.close()
         decryptingStream.close()
         try outputFileStream.close()
-        inputFileStream.close()
+        try inputFileStream.close()
         return decryptedFileURL
     }
     
     func compressAndEncryptFileUsingSalsa20(_ originalFileURL: URL, _ key: [UInt8], _ iv: [UInt8]) throws -> URL {
         let inputFileStream = FileInputStream(with: try! FileHandle(forReadingFrom: originalFileURL))
         try inputFileStream.open()
-        inputFileStream.close()
-        
+        try inputFileStream.close()
+
         let encryptedFileURL = createTmpFileURL(Self.tmpDir)
         let outputFileStream = FileOutputStream(with: try! FileHandle(forWritingTo: encryptedFileURL))
         try outputFileStream.open()
@@ -240,8 +240,8 @@ extension StreamKitTests {
         try compressingStream.close()
         try encryptingStream.close()
         try outputFileStream.close()
-        inputFileStream.close()
-        
+        try inputFileStream.close()
+
         return encryptedFileURL
     }
     
@@ -267,7 +267,7 @@ extension StreamKitTests {
         
         decryptingStream.close()
         try outputFileStream.close()
-        inputFileStream.close()
+        try inputFileStream.close()
         return decryptedFileURL
     }
     
@@ -293,8 +293,8 @@ extension StreamKitTests {
         
         try encryptingStream.close()
         try outputFileStream.close()
-        inputFileStream.close()
-        
+        try inputFileStream.close()
+
         return encryptedFileURL
     }
     
@@ -320,15 +320,14 @@ extension StreamKitTests {
         
         decryptingStream.close()
         try outputFileStream.close()
-        inputFileStream.close()
+        try inputFileStream.close()
         return decryptedFileURL
     }
     
     func compressAndEncryptFileUsingChaCha20(_ originalFileURL: URL, _ key: [UInt8], _ iv: [UInt8]) throws -> URL {
         let inputFileStream = FileInputStream(with: try! FileHandle(forReadingFrom: originalFileURL))
         try inputFileStream.open()
-        inputFileStream.close()
-        
+
         let encryptedFileURL = createTmpFileURL(Self.tmpDir)
         let outputFileStream = FileOutputStream(with: try! FileHandle(forWritingTo: encryptedFileURL))
         try outputFileStream.open()
@@ -351,8 +350,8 @@ extension StreamKitTests {
         try compressingStream.close()
         try encryptingStream.close()
         try outputFileStream.close()
-        inputFileStream.close()
-        
+        try inputFileStream.close()
+
         return encryptedFileURL
     }
     
@@ -379,10 +378,10 @@ extension StreamKitTests {
             try outputFileStream.write(tmpBuffer, length: readLen)
         }
         
-        decompressingStream.close()
+        try decompressingStream.close()
         decryptingStream.close()
         try outputFileStream.close()
-        inputFileStream.close()
+        try inputFileStream.close()
         return decryptedFileURL
     }
     
@@ -408,16 +407,16 @@ extension StreamKitTests {
         
         try encryptingStream.close()
         try outputFileStream.close()
-        inputFileStream.close()
-        
+        try inputFileStream.close()
+
         return encryptedFileURL
     }
     
     func compressAndEncryptFileUsingAes(_ originalFileURL: URL, _ key: [UInt8], _ iv: [UInt8]) throws -> URL {
         let inputFileStream = FileInputStream(with: try! FileHandle(forReadingFrom: originalFileURL))
         try inputFileStream.open()
-        inputFileStream.close()
-        
+        try inputFileStream.close()
+
         let encryptedFileURL = createTmpFileURL(Self.tmpDir)
         let outputFileStream = FileOutputStream(with: try! FileHandle(forWritingTo: encryptedFileURL))
         try outputFileStream.open()
@@ -440,8 +439,8 @@ extension StreamKitTests {
         try compressingStream.close()
         try encryptingStream.close()
         try outputFileStream.close()
-        inputFileStream.close()
-        
+        try inputFileStream.close()
+
         return encryptedFileURL
     }
     
@@ -467,7 +466,7 @@ extension StreamKitTests {
         
         decryptingStream.close()
         try outputFileStream.close()
-        inputFileStream.close()
+        try inputFileStream.close()
         return decryptedFileURL
     }
     
@@ -496,7 +495,7 @@ extension StreamKitTests {
         
         decryptingStream.close()
         try outputFileStream.close()
-        inputFileStream.close()
+        try inputFileStream.close()
         return decryptedFileURL
     }
     
@@ -520,8 +519,8 @@ extension StreamKitTests {
         
         try compressingStream.close()
         try outputFileStream.close()
-        inputFileStream.close()
-        
+        try inputFileStream.close()
+
         return compressedFileURL
     }
     
@@ -543,9 +542,9 @@ extension StreamKitTests {
             try outputFileStream.write(tmpBuffer, length: readLen)
         }
         
-        decompressingStream.close()
+        try decompressingStream.close()
         try outputFileStream.close()
-        inputFileStream.close()
+        try inputFileStream.close()
         return decompressedFileURL
     }
     
@@ -571,8 +570,8 @@ extension StreamKitTests {
         
         try encryptingStream.close()
         try outputFileStream.close()
-        inputFileStream.close()
-        
+        try inputFileStream.close()
+
         return encryptedFileURL
     }
     
@@ -598,15 +597,15 @@ extension StreamKitTests {
         
         decryptingStream.close()
         try outputFileStream.close()
-        inputFileStream.close()
+        try inputFileStream.close()
         return decryptedFileURL
     }
     
     func compressAndEncryptFileUsingTwoFish(_ originalFileURL: URL, _ key: [UInt8], _ iv: [UInt8]) throws -> URL {
         let inputFileStream = FileInputStream(with: try! FileHandle(forReadingFrom: originalFileURL))
         try inputFileStream.open()
-        inputFileStream.close()
-        
+        try inputFileStream.close()
+
         let encryptedFileURL = createTmpFileURL(Self.tmpDir)
         let outputFileStream = FileOutputStream(with: try! FileHandle(forWritingTo: encryptedFileURL))
         try outputFileStream.open()
@@ -629,8 +628,8 @@ extension StreamKitTests {
         try compressingStream.close()
         try encryptingStream.close()
         try outputFileStream.close()
-        inputFileStream.close()
-        
+        try inputFileStream.close()
+
         return encryptedFileURL
     }
     
@@ -657,10 +656,10 @@ extension StreamKitTests {
             try outputFileStream.write(tmpBuffer, length: readLen)
         }
         
-        decompressingStream.close()
+        try decompressingStream.close()
         decryptingStream.close()
         try outputFileStream.close()
-        inputFileStream.close()
+        try inputFileStream.close()
         return decryptedFileURL
     }
     

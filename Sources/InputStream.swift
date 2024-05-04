@@ -30,7 +30,7 @@ public protocol InputStream {
     
     func open() throws
     func read(_ toBuffer: UnsafeMutablePointer<UInt8>, maxLength len: Int) throws -> Int
-    func close()
+    func close() throws
 }
 
 public extension InputStream {

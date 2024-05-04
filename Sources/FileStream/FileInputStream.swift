@@ -59,6 +59,7 @@ public final class FileInputStream: InputStream {
         return readData.count
     }
     
-    public func close() {
+    public func close() throws {
+        try fileHandle.close()
     }
 }

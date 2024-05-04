@@ -89,7 +89,7 @@ extension GzipStreamTests {
         try! compressStream.close()
         
         let resultData = dataOutputStream.buffer
-        try dataOutputStream.close()
+        dataOutputStream.close()
         return resultData
     }
     

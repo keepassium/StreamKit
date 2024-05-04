@@ -81,7 +81,7 @@ extension StreamKitExtensionsTests {
         let data = try decryptingStream.readToEnd()
         
         decryptingStream.close()
-        inputFileStream.close()
+        try inputFileStream.close()
         return String(data: data, encoding: .utf8)
     }
 }
