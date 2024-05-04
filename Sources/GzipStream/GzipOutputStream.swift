@@ -40,8 +40,7 @@ public final class GzipOutputStream: OutputStream {
     public var hasSpaceAvailable: Bool {
         return true
     }
-    
-    /// returns  Z_STREAM_ERROR if level is not a valid compression level
+
     /// - Parameters:
     ///   - windowBits: shall be a base 2 logarithm of the maximum window size to use, and shall be a value between 9 and 15.
     ///

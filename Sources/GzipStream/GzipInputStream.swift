@@ -45,14 +45,17 @@ public final class GzipInputStream: InputStream {
 
     
     /// - Parameters:
-    ///   - inputStream: <#inputStream description#>
-    ///   - windowBits: shall be a base 2 logarithm of the maximum window size to use, and shall be a value between 9 and 15. If the input data was compressed with a larger window size, subsequent attempts to decompress this data will fail with Z_DATA_ERROR, rather than try to allocate a larger window.
-    ///   - deflateBufferSize: <#deflateBufferSize description#>
-    ///   - inflateBufferSize: <#inflateBufferSize description#>
     public init(readingFrom nestedStream: InputStream,
                 windowBits: Int32 = MAX_WBITS + 16,
                 deflateChunkSize: Int = GzipInputStream.defaultDeflateChunkSize,
                 inflateChunkSize: Int = GzipInputStream.defaultInflateChunkSize) {
+    ///   - nestedStream:
+    ///   - windowBits: shall be a base 2 logarithm of the maximum window size to use, and shall be a value between 9 and 15.
+    ///         If the input data was compressed with a larger window size, subsequent attempts to decompress this data will fail
+    ///         with `Z_DATA_ERROR`, rather than try to allocate a larger window.
+    ///   - deflateChunkSize:
+    ///   - inflateChunkSize:
+        assert(windowBits >= 9 && windowBits <= 15, "windowBits value must be between 9 and 15")
         self.nestedStream = nestedStream
         self.windowBits = windowBits
         self.deflateBufferSize = deflateChunkSize
