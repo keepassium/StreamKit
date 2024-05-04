@@ -53,5 +53,6 @@ public final class FileOutputStream: OutputStream {
     }
 
     public func close() throws {
+        try fileHandle.close()
     }
 }

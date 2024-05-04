@@ -57,6 +57,7 @@ public final class AESOutputStream: OutputStream {
 
     deinit {
         outBuffer.deallocate()
+        inBuffer.deallocate()
     }
 
     public var hasSpaceAvailable: Bool {

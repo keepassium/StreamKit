@@ -59,6 +59,7 @@ public final class TwofishOutputStream: OutputStream {
 
     deinit {
         inChunkBuffer.deallocate()
+        outChunkBuffer.deallocate()
     }
 
     public var hasSpaceAvailable: Bool {
