@@ -197,12 +197,12 @@ public final class TwofishInputStream: InputStream {
             }
 
             if !nestedStream.hasBytesAvailable && encryptedBufferReadyLen == 0 {
-                removePaddinDataFromDecryptedBuffer()
+                removePaddingDataFromDecryptedBuffer()
             }
         }
     }
 
-    private func removePaddinDataFromDecryptedBuffer() {
+    private func removePaddingDataFromDecryptedBuffer() {
         if decryptedBufferReadyLen > 0 {
             let lastByte = (decryptedBuffer + decryptedBufferFilledLen - 1).pointee
             decryptedBufferAvailableLen += Int(lastByte)
