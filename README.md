@@ -4,7 +4,7 @@ This open-source Swift library offers a comprehensive collection of cryptographi
 # The available streams
 - [FileStream](FileStream.md)
 - [GzipStream](GzipStream.md)
-- [AesStream](AesStream.md)
+- [AESStream](AESStream.md)
 - [Salsa20Stream](Salsa20Stream.md)
 - [ChaCha20Stream](ChaCha20Stream.md)
 - [TwoFishStream](TwoFishStream.md)
@@ -62,10 +62,10 @@ try compressingStream.write(tmpBuffer, length: readLen)
 try fileOutputStream.close()
 ```
 
-## How to perform encrypting using `AesOutputStream`
+## How to perform encrypting using `AESOutputStream`
 ```swift
 ...
-let encryptingStream = AesOutputStream(writingTo: fileOutputStream,
+let encryptingStream = AESOutputStream(writingTo: fileOutputStream,
                                                    key: key,
                                                    iv: iv)
 try encryptingStream.open()
@@ -75,10 +75,10 @@ try encryptingStream.close()
 ...
 ```
 
-## How to perform decrypting using `AesInputStream`
+## How to perform decrypting using `AESInputStream`
 ```swift
 ...
-let decryptingStream = AesInputStream(readingFrom: inputFileStream,
+let decryptingStream = AESInputStream(readingFrom: inputFileStream,
                                               key: key,
                                               iv: iv)
 try decryptingStream.open()

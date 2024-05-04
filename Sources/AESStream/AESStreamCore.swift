@@ -28,14 +28,14 @@ import Foundation
 
 public let AesIVSize = 16
 
-public typealias AesOptions = Int
-public extension AesOptions {
+public typealias AESOptions = Int
+public extension AESOptions {
     static let CBCMode = 0
     static let PKCS7Padding = kCCOptionPKCS7Padding
     static let ECBMode = kCCOptionECBMode
 }
 
-public struct AesStreamError: LocalizedError {
+public struct AESStreamError: LocalizedError {
     public enum Kind {
         case paramError
         case bufferTooSmall

@@ -26,7 +26,7 @@
 import CommonCrypto
 import Foundation
 
-public final class AesInputStream: InputStream {
+public final class AESInputStream: InputStream {
     public static let defaultChunkSize = 1 << 15
     private let nestedStream: InputStream
     private var cryptorRef: CCCryptorRef?
@@ -40,14 +40,14 @@ public final class AesInputStream: InputStream {
     private var decryptedBufferUsedLen: Int
     private var decryptedBufferAvailableLen: Int
     private var status: Int32 = 0
-    private let options: AesOptions
+    private let options: AESOptions
 
     public init(
         readingFrom nestedStream: InputStream,
         key: [UInt8],
         iv: [UInt8],
-        options: AesOptions = AesOptions.PKCS7Padding,
-        chunkSize: Int = AesInputStream.defaultChunkSize
+        options: AESOptions = AESOptions.PKCS7Padding,
+        chunkSize: Int = AESInputStream.defaultChunkSize
     ) {
         self.nestedStream = nestedStream
         self.options = options
@@ -74,7 +74,7 @@ public final class AesInputStream: InputStream {
         isOpen = true
 
         guard iv.count == AesIVSize else {
-            throw AesStreamError(kind: .ivSizeError)
+            throw AESStreamError(kind: .ivSizeError)
         }
 
         status = CCCryptorCreate(
@@ -87,7 +87,7 @@ public final class AesInputStream: InputStream {
             &cryptorRef
         )
         guard status == kCCSuccess else {
-            throw AesStreamError(code: status)
+            throw AESStreamError(code: status)
         }
     }
 
@@ -137,7 +137,7 @@ public final class AesInputStream: InputStream {
         }
 
         guard status == kCCSuccess else {
-            throw AesStreamError(code: status)
+            throw AESStreamError(code: status)
         }
         decryptedBufferAvailableLen -= outMoved
     }

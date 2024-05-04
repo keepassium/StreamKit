@@ -26,7 +26,7 @@
 import CommonCrypto
 import Foundation
 
-public final class AesOutputStream: OutputStream {
+public final class AESOutputStream: OutputStream {
     public static let defaultChunkSize = 1 << 15
     private var cryptorRef: CCCryptorRef?
     private var outBuffer: UnsafeMutablePointer<UInt8>
@@ -37,14 +37,14 @@ public final class AesOutputStream: OutputStream {
     private let key: [UInt8]
     private var isOpen = false
     private var status: Int32 = 0
-    private let options: AesOptions
+    private let options: AESOptions
 
     public init(
         writingTo outputStream: OutputStream,
         key: [UInt8],
         iv: [UInt8],
-        options: AesOptions = AesOptions.PKCS7Padding,
-        chunkSize: Int = AesOutputStream.defaultChunkSize
+        options: AESOptions = AESOptions.PKCS7Padding,
+        chunkSize: Int = AESOutputStream.defaultChunkSize
     ) {
         self.nestedStream = outputStream
         self.options = options
@@ -68,7 +68,7 @@ public final class AesOutputStream: OutputStream {
         isOpen = true
 
         guard iv.count == AesIVSize else {
-            throw AesStreamError(kind: .ivSizeError)
+            throw AESStreamError(kind: .ivSizeError)
         }
 
         status = CCCryptorCreate(
@@ -81,7 +81,7 @@ public final class AesOutputStream: OutputStream {
             &cryptorRef
         )
         guard status == kCCSuccess else {
-            throw AesStreamError(code: status)
+            throw AESStreamError(code: status)
         }
     }
 
@@ -104,7 +104,7 @@ public final class AesOutputStream: OutputStream {
                 &outBufCount
             )
             guard status == kCCSuccess else {
-                throw AesStreamError(code: status)
+                throw AESStreamError(code: status)
             }
 
             if outBufCount > 0 {
@@ -126,7 +126,7 @@ public final class AesOutputStream: OutputStream {
             &outBufCount
         )
         guard status == kCCSuccess else {
-            throw AesStreamError(code: status)
+            throw AESStreamError(code: status)
         }
 
         try nestedStream.write(outBuffer, length: outBufCount)

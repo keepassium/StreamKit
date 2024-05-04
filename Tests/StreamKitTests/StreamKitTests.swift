@@ -87,25 +87,25 @@ final class StreamKitTests: XCTestCase {
         XCTAssertEqual(md5(originalFileURL), md5(decryptedFileURL))
     }
 
-    func testEncryptingDecrypting1MBFileUsingAesStream() throws {
+    func testEncryptingDecrypting1MBFileUsingAESStream() throws {
         let key = genBufferOfLen(32)
         let iv = genBufferOfLen(AesIVSize)
 
         let originalFileURL = fileURL("1MB")!
-        let encryptedFileURL = try encryptFileUsingAes(originalFileURL, key, iv)
-        let decryptedFileURL = try decryptFileUsingAes(encryptedFileURL, key, iv)
+        let encryptedFileURL = try encryptFileUsingAES(originalFileURL, key, iv)
+        let decryptedFileURL = try decryptFileUsingAES(encryptedFileURL, key, iv)
 
         XCTAssertNotEqual(md5(originalFileURL), md5(encryptedFileURL))
         XCTAssertEqual(md5(originalFileURL), md5(decryptedFileURL))
     }
 
-    func testCompressEncryptDecryptDecompress1MBFileUsingAesStream() throws {
+    func testCompressEncryptDecryptDecompress1MBFileUsingAESStream() throws {
         let key = genBufferOfLen(32)
         let iv = genBufferOfLen(AesIVSize)
 
         let originalFileURL = fileURL("1MB")!
-        let encryptedFileURL = try compressAndEncryptFileUsingAes(originalFileURL, key, iv)
-        let decryptedFileURL = try decryptAndDecompressFileUsingAes(encryptedFileURL, key, iv)
+        let encryptedFileURL = try compressAndEncryptFileUsingAES(originalFileURL, key, iv)
+        let decryptedFileURL = try decryptAndDecompressFileUsingAES(encryptedFileURL, key, iv)
 
         XCTAssertNotEqual(md5(originalFileURL), md5(encryptedFileURL))
         XCTAssertEqual(md5(originalFileURL), md5(decryptedFileURL))
@@ -368,7 +368,7 @@ extension StreamKitTests {
         return decryptedFileURL
     }
 
-    func encryptFileUsingAes(_ originalFileURL: URL, _ key: [UInt8], _ iv: [UInt8]) throws -> URL {
+    func encryptFileUsingAES(_ originalFileURL: URL, _ key: [UInt8], _ iv: [UInt8]) throws -> URL {
         let inputFileStream = FileInputStream(with: try! FileHandle(forReadingFrom: originalFileURL))
         try inputFileStream.open()
 
@@ -376,7 +376,7 @@ extension StreamKitTests {
         let outputFileStream = FileOutputStream(with: try! FileHandle(forWritingTo: encryptedFileURL))
         try outputFileStream.open()
 
-        let encryptingStream = AesOutputStream(writingTo: outputFileStream, key: key, iv: iv)
+        let encryptingStream = AESOutputStream(writingTo: outputFileStream, key: key, iv: iv)
         try encryptingStream.open()
 
         let tmpBufferLen = 1 << 16 // 65 KB buffer
@@ -393,7 +393,7 @@ extension StreamKitTests {
         return encryptedFileURL
     }
 
-    func compressAndEncryptFileUsingAes(_ originalFileURL: URL, _ key: [UInt8], _ iv: [UInt8]) throws -> URL {
+    func compressAndEncryptFileUsingAES(_ originalFileURL: URL, _ key: [UInt8], _ iv: [UInt8]) throws -> URL {
         let inputFileStream = FileInputStream(with: try! FileHandle(forReadingFrom: originalFileURL))
         try inputFileStream.open()
 
@@ -401,7 +401,7 @@ extension StreamKitTests {
         let outputFileStream = FileOutputStream(with: try! FileHandle(forWritingTo: encryptedFileURL))
         try outputFileStream.open()
 
-        let encryptingStream = AesOutputStream(writingTo: outputFileStream, key: key, iv: iv)
+        let encryptingStream = AESOutputStream(writingTo: outputFileStream, key: key, iv: iv)
         try encryptingStream.open()
 
         let compressingStream = GzipOutputStream(writingTo: encryptingStream)
@@ -422,7 +422,7 @@ extension StreamKitTests {
         return encryptedFileURL
     }
 
-    func decryptFileUsingAes(_ encryptedFileURL: URL, _ key: [UInt8], _ iv: [UInt8]) throws -> URL {
+    func decryptFileUsingAES(_ encryptedFileURL: URL, _ key: [UInt8], _ iv: [UInt8]) throws -> URL {
         let inputFileStream = FileInputStream(with: try! FileHandle(forReadingFrom: encryptedFileURL))
         try inputFileStream.open()
 
@@ -430,7 +430,7 @@ extension StreamKitTests {
         let outputFileStream = FileOutputStream(with: try! FileHandle(forWritingTo: decryptedFileURL))
         try outputFileStream.open()
 
-        let decryptingStream = AesInputStream(readingFrom: inputFileStream, key: key, iv: iv)
+        let decryptingStream = AESInputStream(readingFrom: inputFileStream, key: key, iv: iv)
         try decryptingStream.open()
 
         let tmpBufferLen = 1 << 16 // 65 KB buffer
@@ -446,7 +446,7 @@ extension StreamKitTests {
         return decryptedFileURL
     }
 
-    func decryptAndDecompressFileUsingAes(_ encryptedFileURL: URL, _ key: [UInt8], _ iv: [UInt8]) throws -> URL {
+    func decryptAndDecompressFileUsingAES(_ encryptedFileURL: URL, _ key: [UInt8], _ iv: [UInt8]) throws -> URL {
         let inputFileStream = FileInputStream(with: try! FileHandle(forReadingFrom: encryptedFileURL))
         try inputFileStream.open()
 
@@ -454,7 +454,7 @@ extension StreamKitTests {
         let outputFileStream = FileOutputStream(with: try! FileHandle(forWritingTo: decryptedFileURL))
         try outputFileStream.open()
 
-        let decryptingStream = AesInputStream(readingFrom: inputFileStream, key: key, iv: iv)
+        let decryptingStream = AESInputStream(readingFrom: inputFileStream, key: key, iv: iv)
         try decryptingStream.open()
 
         let decompressingStream = GzipInputStream(readingFrom: decryptingStream)

@@ -26,7 +26,7 @@
 import StreamKit
 import XCTest
 
-final class AesStreamTests: XCTestCase {
+final class AESStreamTests: XCTestCase {
     func testForWrongKey() {
         let sourceBufLen = 128
         let sourceBuf = genBufferOfLen(sourceBufLen)
@@ -108,18 +108,18 @@ final class AesStreamTests: XCTestCase {
     }
 }
 
-extension AesStreamTests {
+extension AESStreamTests {
     func encrypt(
         _ buffer: UnsafePointer<UInt8>,
         len: Int,
         key: [UInt8],
         iv: [UInt8],
-        chunkSize: Int = AesOutputStream.defaultChunkSize
+        chunkSize: Int = AESOutputStream.defaultChunkSize
     ) throws -> [UInt8] {
         let dataOutputStream = BufferOutputStream()
         try dataOutputStream.open()
 
-        let encryptingStream = AesOutputStream(
+        let encryptingStream = AESOutputStream(
             writingTo: dataOutputStream,
             key: key,
             iv: iv,
@@ -137,12 +137,12 @@ extension AesStreamTests {
         _ buffer: [UInt8],
         key: [UInt8],
         iv: [UInt8],
-        chunkSize: Int = AesInputStream.defaultChunkSize
+        chunkSize: Int = AESInputStream.defaultChunkSize
     ) throws -> [UInt8] {
         let dataInputStream = BufferInputStream(withBuffer: buffer)
         try dataInputStream.open()
 
-        let decryptingStream = AesInputStream(
+        let decryptingStream = AESInputStream(
             readingFrom: dataInputStream,
             key: key,
             iv: iv,
