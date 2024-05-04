@@ -31,7 +31,7 @@ public struct TwofishStreamError: LocalizedError {
     public enum Kind: Equatable {
         case fillKeyedSBoxes
         case notInitialized
-        case illegalKeyLength
+        // case illegalKeyLength - see keySizeError instead
         case platformUnsuitableUInt32
         case platformUnsuitableByte
         case platformGet32ImplementedImproperly
@@ -65,7 +65,7 @@ public struct TwofishStreamError: LocalizedError {
         let mapper: [Int32: Kind] = [
             1: .fillKeyedSBoxes,
             2: .notInitialized,
-            3: .illegalKeyLength,
+            3: .keySizeError,
             101: .platformUnsuitableUInt32,
             102: .platformUnsuitableByte,
             103: .platformGet32ImplementedImproperly,
