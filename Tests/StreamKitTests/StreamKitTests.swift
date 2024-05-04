@@ -197,7 +197,7 @@ extension StreamKitTests {
 
         let tmpBufferLen = 1 << 16 // 65 KB buffer
         var tmpBuffer = Array<UInt8>(repeating: 0, count: tmpBufferLen)
-        while decryptingStream.hasBytesAvailable {
+        while decompressingStream.hasBytesAvailable {
             let readLen = try decompressingStream.read(&tmpBuffer, maxLength: tmpBufferLen)
             try outputFileStream.write(tmpBuffer, length: readLen)
         }
@@ -356,7 +356,7 @@ extension StreamKitTests {
 
         let tmpBufferLen = 1 << 16 // 65 KB buffer
         var tmpBuffer = Array<UInt8>(repeating: 0, count: tmpBufferLen)
-        while decryptingStream.hasBytesAvailable {
+        while decompressingStream.hasBytesAvailable {
             let readLen = try decompressingStream.read(&tmpBuffer, maxLength: tmpBufferLen)
             try outputFileStream.write(tmpBuffer, length: readLen)
         }
@@ -462,7 +462,7 @@ extension StreamKitTests {
 
         let tmpBufferLen = 1 << 16 // 65 KB buffer
         var tmpBuffer = Array<UInt8>(repeating: 0, count: tmpBufferLen)
-        while decryptingStream.hasBytesAvailable {
+        while decompressingStream.hasBytesAvailable {
             let readLen = try decompressingStream.read(&tmpBuffer, maxLength: tmpBufferLen)
             try outputFileStream.write(tmpBuffer, length: readLen)
         }
@@ -616,7 +616,7 @@ extension StreamKitTests {
 
         let tmpBufferLen = 1 << 16 // 65 KB buffer
         var tmpBuffer = Array<UInt8>(repeating: 0, count: tmpBufferLen)
-        while decryptingStream.hasBytesAvailable {
+        while decompressingStream.hasBytesAvailable {
             let readLen = try decompressingStream.read(&tmpBuffer, maxLength: tmpBufferLen)
             try outputFileStream.write(tmpBuffer, length: readLen)
         }
