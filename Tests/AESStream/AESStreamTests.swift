@@ -31,7 +31,7 @@ final class AESStreamTests: XCTestCase {
         let sourceBufLen = 128
         let sourceBuf = genBufferOfLen(sourceBufLen)
         let key = genBufferOfLen(31)
-        let iv = genBufferOfLen(8)
+        let iv = genBufferOfLen(16)
         XCTAssertThrowsError(try encrypt(sourceBuf, len: sourceBufLen, key: key, iv: iv)) { error in
             guard let aesError = error as? AESStreamError else {
                 XCTFail("Unexpected error type")
