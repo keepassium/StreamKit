@@ -170,5 +170,7 @@ public final class TwofishOutputStream: OutputStream {
         }
         Twofish_encrypt(&context, &block, outChunkBuffer)
         try nestedStream.write(outChunkBuffer, length: inChunkBufferReadyLen)
+
+        Twofish_clear_key(&context)
     }
 }
