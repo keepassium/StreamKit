@@ -168,6 +168,5 @@ public final class GzipInputStream: InputStream {
     public func close() throws {
         guard isOpen else { fatalError("The stream is not opened") }
         _ = inflateEnd(&zstream)
-        try nestedStream.close()
     }
 }
