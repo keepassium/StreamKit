@@ -54,7 +54,7 @@ final class FileStreamTests: XCTestCase {
 
         try inputFileStream.close()
         try outputFileStream.close()
-        XCTAssertEqual(md5(inFileURL), md5(outputFileURL))
+        XCTAssertEqual(sha256(fileAt: inFileURL), sha256(fileAt: outputFileURL))
     }
 
     func testRead16BFile() throws {

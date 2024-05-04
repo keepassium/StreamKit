@@ -47,8 +47,8 @@ final class StreamKitTests: XCTestCase {
         let encryptedFileURL = try encryptFileUsingSalsa20(originalFileURL, key, iv)
         let decryptedFileURL = try decryptFileUsingSalsa20(encryptedFileURL, key, iv)
 
-        XCTAssertNotEqual(md5(originalFileURL), md5(encryptedFileURL))
-        XCTAssertEqual(md5(originalFileURL), md5(decryptedFileURL))
+        XCTAssertNotEqual(sha256(fileAt: originalFileURL), sha256(fileAt: encryptedFileURL))
+        XCTAssertEqual(sha256(fileAt: originalFileURL), sha256(fileAt: decryptedFileURL))
     }
 
     func testCompressEncryptDecryptDecompress1MBFileUsingSalsa20Stream() throws {
@@ -59,8 +59,8 @@ final class StreamKitTests: XCTestCase {
         let encryptedFileURL = try compressAndEncryptFileUsingSalsa20(originalFileURL, key, iv)
         let decryptedFileURL = try decryptAndDecompressFileUsingSalsa20(encryptedFileURL, key, iv)
 
-        XCTAssertNotEqual(md5(originalFileURL), md5(encryptedFileURL))
-        XCTAssertEqual(md5(originalFileURL), md5(decryptedFileURL))
+        XCTAssertNotEqual(sha256(fileAt: originalFileURL), sha256(fileAt: encryptedFileURL))
+        XCTAssertEqual(sha256(fileAt: originalFileURL), sha256(fileAt: decryptedFileURL))
     }
 
     func testEncryptingDecrypting1MBFileUsingChaCha20Streams() throws {
@@ -71,8 +71,8 @@ final class StreamKitTests: XCTestCase {
         let encryptedFileURL = try encryptFileUsingChaCha20(originalFileURL, key, iv)
         let decryptedFileURL = try decryptFileUsingChaCha20(encryptedFileURL, key, iv)
 
-        XCTAssertNotEqual(md5(originalFileURL), md5(encryptedFileURL))
-        XCTAssertEqual(md5(originalFileURL), md5(decryptedFileURL))
+        XCTAssertNotEqual(sha256(fileAt: originalFileURL), sha256(fileAt: encryptedFileURL))
+        XCTAssertEqual(sha256(fileAt: originalFileURL), sha256(fileAt: decryptedFileURL))
     }
 
     func testCompressEncryptDecryptDecompress1MBFileUsingChaCha20Stream() throws {
@@ -83,8 +83,8 @@ final class StreamKitTests: XCTestCase {
         let encryptedFileURL = try compressAndEncryptFileUsingChaCha20(originalFileURL, key, iv)
         let decryptedFileURL = try decryptAndDecompressFileUsingChaCha20(encryptedFileURL, key, iv)
 
-        XCTAssertNotEqual(md5(originalFileURL), md5(encryptedFileURL))
-        XCTAssertEqual(md5(originalFileURL), md5(decryptedFileURL))
+        XCTAssertNotEqual(sha256(fileAt: originalFileURL), sha256(fileAt: encryptedFileURL))
+        XCTAssertEqual(sha256(fileAt: originalFileURL), sha256(fileAt: decryptedFileURL))
     }
 
     func testEncryptingDecrypting1MBFileUsingAESStream() throws {
@@ -95,8 +95,8 @@ final class StreamKitTests: XCTestCase {
         let encryptedFileURL = try encryptFileUsingAES(originalFileURL, key, iv)
         let decryptedFileURL = try decryptFileUsingAES(encryptedFileURL, key, iv)
 
-        XCTAssertNotEqual(md5(originalFileURL), md5(encryptedFileURL))
-        XCTAssertEqual(md5(originalFileURL), md5(decryptedFileURL))
+        XCTAssertNotEqual(sha256(fileAt: originalFileURL), sha256(fileAt: encryptedFileURL))
+        XCTAssertEqual(sha256(fileAt: originalFileURL), sha256(fileAt: decryptedFileURL))
     }
 
     func testCompressEncryptDecryptDecompress1MBFileUsingAESStream() throws {
@@ -107,8 +107,8 @@ final class StreamKitTests: XCTestCase {
         let encryptedFileURL = try compressAndEncryptFileUsingAES(originalFileURL, key, iv)
         let decryptedFileURL = try decryptAndDecompressFileUsingAES(encryptedFileURL, key, iv)
 
-        XCTAssertNotEqual(md5(originalFileURL), md5(encryptedFileURL))
-        XCTAssertEqual(md5(originalFileURL), md5(decryptedFileURL))
+        XCTAssertNotEqual(sha256(fileAt: originalFileURL), sha256(fileAt: encryptedFileURL))
+        XCTAssertEqual(sha256(fileAt: originalFileURL), sha256(fileAt: decryptedFileURL))
     }
 
     func testDecompressing() throws {
@@ -117,7 +117,7 @@ final class StreamKitTests: XCTestCase {
 
         let decompressedFileURL = try decompressFileUsingGzip(compressedFileURL)
 
-        XCTAssertEqual(md5(originalFileURL), md5(decompressedFileURL))
+        XCTAssertEqual(sha256(fileAt: originalFileURL), sha256(fileAt: decompressedFileURL))
     }
 
     func testCompressDecompress1MBFileUsingGzipStream() throws {
@@ -125,8 +125,8 @@ final class StreamKitTests: XCTestCase {
         let compressedFileURL = try compressFileUsingGzip(originalFileURL)
         let decompressedFileURL = try decompressFileUsingGzip(compressedFileURL)
 
-        XCTAssertNotEqual(md5(originalFileURL), md5(compressedFileURL))
-        XCTAssertEqual(md5(originalFileURL), md5(decompressedFileURL))
+        XCTAssertNotEqual(sha256(fileAt: originalFileURL), sha256(fileAt: compressedFileURL))
+        XCTAssertEqual(sha256(fileAt: originalFileURL), sha256(fileAt: decompressedFileURL))
     }
 
     func testEncryptingDecrypting1MBFileUsingTwofishStreams() throws {
@@ -137,8 +137,8 @@ final class StreamKitTests: XCTestCase {
         let encryptedFileURL = try encryptFileUsingTwofish(originalFileURL, key, iv)
         let decryptedFileURL = try decryptFileUsingTwofish(encryptedFileURL, key, iv)
 
-        XCTAssertNotEqual(md5(originalFileURL), md5(encryptedFileURL))
-        XCTAssertEqual(md5(originalFileURL), md5(decryptedFileURL))
+        XCTAssertNotEqual(sha256(fileAt: originalFileURL), sha256(fileAt: encryptedFileURL))
+        XCTAssertEqual(sha256(fileAt: originalFileURL), sha256(fileAt: decryptedFileURL))
     }
 
     func testCompressEncryptDecryptDecompress1MBFileUsingTwofishStream() throws {
@@ -149,8 +149,8 @@ final class StreamKitTests: XCTestCase {
         let encryptedFileURL = try compressAndEncryptFileUsingTwofish(originalFileURL, key, iv)
         let decryptedFileURL = try decryptAndDecompressFileUsingTwofish(encryptedFileURL, key, iv)
 
-        XCTAssertNotEqual(md5(originalFileURL), md5(encryptedFileURL))
-        XCTAssertEqual(md5(originalFileURL), md5(decryptedFileURL))
+        XCTAssertNotEqual(sha256(fileAt: originalFileURL), sha256(fileAt: encryptedFileURL))
+        XCTAssertEqual(sha256(fileAt: originalFileURL), sha256(fileAt: decryptedFileURL))
     }
 
 }

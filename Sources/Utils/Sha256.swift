@@ -26,7 +26,7 @@
 import CommonCrypto
 import Foundation
 
-public func md5(_ url: URL) -> [UInt8]? {
+public func sha256(fileAt url: URL) -> [UInt8]? {
     let bufferSize = 1 << 11
     do {
         let file = try FileHandle(forReadingFrom: url)
@@ -34,14 +34,14 @@ public func md5(_ url: URL) -> [UInt8]? {
             file.closeFile()
         }
 
-        var context = CC_MD5_CTX()
-        CC_MD5_Init(&context)
+        var context = CC_SHA256_CTX()
+        CC_SHA256_Init(&context)
 
         while autoreleasepool(invoking: {
             let data = file.readData(ofLength: bufferSize)
             if data.count > 0 {
                 data.withUnsafeBytes {
-                    _ = CC_MD5_Update(&context, $0.baseAddress, numericCast(data.count))
+                    _ = CC_SHA256_Update(&context, $0.baseAddress, numericCast(data.count))
                 }
                 return true
             } else {
@@ -49,8 +49,8 @@ public func md5(_ url: URL) -> [UInt8]? {
             }
         }) { }
 
-        var digest: [UInt8] = Array(repeating: 0, count: Int(CC_MD5_DIGEST_LENGTH))
-        _ = CC_MD5_Final(&digest, &context)
+        var digest: [UInt8] = Array(repeating: 0, count: Int(CC_SHA256_DIGEST_LENGTH))
+        _ = CC_SHA256_Final(&digest, &context)
         return digest
     } catch {
         return nil
