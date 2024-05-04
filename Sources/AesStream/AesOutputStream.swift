@@ -27,7 +27,7 @@ import Foundation
 import CommonCrypto
 
 public final class AesOutputStream: OutputStream {
-    public static let defaultChunkSize = 1<<15
+    public static let defaultChunkSize = 1 << 15
     private var cryptorRef: CCCryptorRef?
     private var outBuffer: UnsafeMutablePointer<UInt8>
     private var inBuffer: UnsafeMutablePointer<UInt8>
@@ -39,11 +39,13 @@ public final class AesOutputStream: OutputStream {
     private var status: Int32 = 0
     private let options: AesOptions
     
-    public init(writingTo outputStream: OutputStream,
-                key: [UInt8],
-                iv: [UInt8],
-                options: AesOptions = AesOptions.PKCS7Padding,
-                chunkSize: Int = AesOutputStream.defaultChunkSize) {
+    public init(
+        writingTo outputStream: OutputStream,
+        key: [UInt8],
+        iv: [UInt8],
+        options: AesOptions = AesOptions.PKCS7Padding,
+        chunkSize: Int = AesOutputStream.defaultChunkSize
+    ) {
         self.nestedStream = outputStream
         self.options = options
         self.outBuffer = UnsafeMutablePointer.allocate(capacity: chunkSize)
@@ -69,13 +71,15 @@ public final class AesOutputStream: OutputStream {
             throw AesStreamError(kind: .ivSizeError)
         }
         
-        status = CCCryptorCreate(CCOperation(kCCEncrypt),
-                                 CCAlgorithm(kCCAlgorithmAES),
-                                 CCOptions(options),
-                                 key,
-                                 key.count,
-                                 iv,
-                                 &cryptorRef)
+        status = CCCryptorCreate(
+            CCOperation(kCCEncrypt),
+            CCAlgorithm(kCCAlgorithmAES),
+            CCOptions(options),
+            key,
+            key.count,
+            iv,
+            &cryptorRef
+        )
         guard status == kCCSuccess else {
             throw AesStreamError(code: status)
         }
@@ -88,15 +92,17 @@ public final class AesOutputStream: OutputStream {
         var totalReadLen = 0
         while remainingLen > 0 {
             let inBufAvailable = min(chunkSize, remainingLen)
-            inBuffer.initialize(from: buffer+totalReadLen, count: inBufAvailable)
-            
+            inBuffer.initialize(from: buffer + totalReadLen, count: inBufAvailable)
+
             var outBufCount = 0
-            status = CCCryptorUpdate(cryptorRef,
-                                     inBuffer,
-                                     inBufAvailable,
-                                     outBuffer,
-                                     chunkSize,
-                                     &outBufCount)
+            status = CCCryptorUpdate(
+                cryptorRef,
+                inBuffer,
+                inBufAvailable,
+                outBuffer,
+                chunkSize,
+                &outBufCount
+            )
             guard status == kCCSuccess else {
                 throw AesStreamError(code: status)
             }
@@ -113,10 +119,12 @@ public final class AesOutputStream: OutputStream {
         guard isOpen else { fatalError("The stream is not opened") }
         
         var outBufCount = 0
-        status = CCCryptorFinal(cryptorRef,
-                                outBuffer,
-                                chunkSize,
-                                &outBufCount)
+        status = CCCryptorFinal(
+            cryptorRef,
+            outBuffer,
+            chunkSize,
+            &outBufCount
+        )
         guard status == kCCSuccess else {
             throw AesStreamError(code: status)
         }

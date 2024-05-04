@@ -28,12 +28,12 @@ import StreamKit
 
 final class FileStreamTests: XCTestCase {
     static var tmpDir: URL!
-    
+
     override class func setUp() {
         super.setUp()
         tmpDir = try! createTmpFolder()
     }
-    
+
     func testCopyFile() throws {
         let inFileURL = fileURL("1MB")!
         let inFileHandle = try! FileHandle(forReadingFrom: inFileURL)
@@ -45,7 +45,7 @@ final class FileStreamTests: XCTestCase {
         let outputFileStream = FileOutputStream(with: fileHandle)
         try outputFileStream.open()
                 
-        let tmpBufferLen = 1<<16 // 65KB buffer
+        let tmpBufferLen = 1 << 16 // 65 KB buffer
         var tmpBuffer = Array<UInt8>(repeating: 0, count: tmpBufferLen)
         while inputFileStream.hasBytesAvailable {
             let readLen = inputFileStream.read(&tmpBuffer, maxLength: tmpBufferLen)
@@ -56,14 +56,14 @@ final class FileStreamTests: XCTestCase {
         try outputFileStream.close()
         XCTAssertEqual(md5(inFileURL), md5(outputFileURL))
     }
-    
+
     func testRead16BFile() throws {
         let inFileURL = fileURL("16B")!
         let inFileHandle = try! FileHandle(forReadingFrom: inFileURL)
         let inputFileStream = FileInputStream(with: inFileHandle)
         try inputFileStream.open()
 
-        let tmpBufferLen = 1<<16 // 65KB buffer
+        let tmpBufferLen = 1 << 16 // 65KB buffer
         var tmpBuffer = Array<UInt8>(repeating: 0, count: tmpBufferLen)
         
         XCTAssertEqual(16, inputFileStream.read(&tmpBuffer, maxLength: 16))
@@ -73,10 +73,9 @@ final class FileStreamTests: XCTestCase {
         
         try inputFileStream.close()
     }
-    
+
     override class func tearDown() {
         super.tearDown()
         try! removeTmpFolder(tmpDir)
     }
-
 }

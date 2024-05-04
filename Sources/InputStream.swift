@@ -34,7 +34,7 @@ public protocol InputStream {
 }
 
 public extension InputStream {
-    func readToEnd(_ chunkLen: Int = 1<<15) throws -> Data {
+    func readToEnd(_ chunkLen: Int = 1 << 15) throws -> Data {
         var result = Data()
         var tmpBuffer = Array<UInt8>(repeating: 0, count: chunkLen)
         while hasBytesAvailable {

@@ -44,7 +44,7 @@ public final class BufferInputStream: InputStream {
             return 0
         }
 
-        let bytesLeft = buffer.count-offset
+        let bytesLeft = buffer.count - offset
         let readLen = min(bytesLeft, len)
         buffer.withUnsafeBufferPointer { ubp in
             if let ptr = ubp.baseAddress {

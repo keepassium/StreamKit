@@ -44,7 +44,7 @@ final class BufferInputStreamTests: XCTestCase {
     }
     
     func testRead_1KB() throws {
-        let len = 1<<10
+        let len = 1 << 10
         var array = genBufferOfLen(len)
         for i in stride(from: 100, to: len, by: 100) {
             try checkRead(&array, i)

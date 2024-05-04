@@ -43,11 +43,12 @@ public final class GzipOutputStream: OutputStream {
 
     /// - Parameters:
     ///   - windowBits: shall be a base 2 logarithm of the maximum window size to use, and shall be a value between 9 and 15.
-    ///
-    public init(writingTo nestedStream: OutputStream,
-                windowBits: Int32 = MAX_WBITS + 16,
-                deflateChunkSize: Int = defaultDeflateChunkSize,
-                compressionLevel: GzipCompressionLevel = .defaultCompression) {
+    public init(
+        writingTo nestedStream: OutputStream,
+        windowBits: Int32 = MAX_WBITS + 16,
+        deflateChunkSize: Int = defaultDeflateChunkSize,
+        compressionLevel: GzipCompressionLevel = .defaultCompression
+    ) {
         self.nestedStream = nestedStream
         self.windowBits = windowBits
         self.deflateBufferSize = deflateChunkSize
@@ -66,14 +67,16 @@ public final class GzipOutputStream: OutputStream {
         
         let zlibVersion = ZLIB_VERSION
         let streamSize = MemoryLayout<z_stream>.size
-        status = deflateInit2_(&zstream,
-                               compressionLevel,
-                               Z_DEFLATED,
-                               windowBits,
-                               MAX_MEM_LEVEL,
-                               Z_DEFAULT_STRATEGY,
-                               zlibVersion,
-                               Int32(streamSize))
+        status = deflateInit2_(
+            &zstream,
+            compressionLevel,
+            Z_DEFLATED,
+            windowBits,
+            MAX_MEM_LEVEL,
+            Z_DEFAULT_STRATEGY,
+            zlibVersion,
+            Int32(streamSize)
+        )
         guard status == Z_OK else {
             throw GzipStreamError(code: status, description: zstream.msg)
         }
@@ -96,7 +99,7 @@ public final class GzipOutputStream: OutputStream {
                         throw GzipStreamError(code: status, description: zstream.msg)
                     }
                     
-                    let outBytesLength = deflateBufferSize-Int(zstream.avail_out)
+                    let outBytesLength = deflateBufferSize - Int(zstream.avail_out)
                     try nestedStream.write(deflateBuffer, length: outBytesLength)
                 } while zstream.avail_out == 0
             }
@@ -120,7 +123,7 @@ public final class GzipOutputStream: OutputStream {
                 guard status != Z_STREAM_ERROR else {
                     throw GzipStreamError(code: status, description: zstream.msg)
                 }
-                let outBytesCount = deflateBufferSize-Int(zstream.avail_out)
+                let outBytesCount = deflateBufferSize - Int(zstream.avail_out)
                 try nestedStream.write(deflateBuffer, length: outBytesCount)
                 
             } while status != Z_STREAM_END

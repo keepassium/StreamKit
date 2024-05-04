@@ -36,7 +36,7 @@ final class BufferOutputStreamTests: XCTestCase {
     }
     
     func testWriteDataOfLenghtUpTo_1Kb() throws {
-        var array: [UInt8] = genBufferOfLen(1<<10)
+        var array: [UInt8] = genBufferOfLen(1 << 10)
         try checkWrite(&array)
     }
 }

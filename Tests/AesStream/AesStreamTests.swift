@@ -32,7 +32,7 @@ final class AesStreamTests: XCTestCase {
         let sourceBuf = genBufferOfLen(sourceBufLen)
         let key = genBufferOfLen(31)
         let iv = genBufferOfLen(8)
-        XCTAssertThrowsError(try encrypt(sourceBuf, sourceBufLen, key, iv))
+        XCTAssertThrowsError(try encrypt(sourceBuf, len: sourceBufLen, key: key, iv: iv))
     }
     
     func testForWrongIV() {
@@ -40,7 +40,7 @@ final class AesStreamTests: XCTestCase {
         let sourceBuf = genBufferOfLen(sourceBufLen)
         let key = genBufferOfLen(32)
         let iv = genBufferOfLen(7)
-        XCTAssertThrowsError(try encrypt(sourceBuf, sourceBufLen, key, iv))
+        XCTAssertThrowsError(try encrypt(sourceBuf, len: sourceBufLen, key: key, iv: iv))
     }
     
     func testEncryptZeroLenBuffer() throws {
@@ -48,7 +48,7 @@ final class AesStreamTests: XCTestCase {
         let sourceBuf = genBufferOfLen(len)
         let key = genBufferOfLen(16)
         let iv = genBufferOfLen(16)
-        let compressedBuf = try encrypt(sourceBuf, len, key, iv)
+        let compressedBuf = try encrypt(sourceBuf, len: len, key: key, iv: iv)
         XCTAssertEqual(16, compressedBuf.count)
     }
     
@@ -56,9 +56,9 @@ final class AesStreamTests: XCTestCase {
         let len = 0
         let sourceBuf = genBufferOfLen(len)
         let iv = genBufferOfLen(16)
-        for keySize in [16,24,32] {
+        for keySize in [16, 24, 32] {
             let key = genBufferOfLen(keySize)
-            let compressedBuf = try encrypt(sourceBuf, len, key, iv)
+            let compressedBuf = try encrypt(sourceBuf, len: len, key: key, iv: iv)
             XCTAssertEqual(16, compressedBuf.count)
         }
     }
@@ -67,19 +67,20 @@ final class AesStreamTests: XCTestCase {
         let sourceBufLen = 512
         let sourceBuf = genBufferOfLen(sourceBufLen)
         let iv = genBufferOfLen(16)
-        for keyLen in (0...15).map({$0}) {
+        let keyLenOptions = (0...15).map {$0}
+        for keyLen in keyLenOptions {
             let key = genBufferOfLen(keyLen)
-            XCTAssertThrowsError(try encrypt(sourceBuf, sourceBufLen, key, iv))
+            XCTAssertThrowsError(try encrypt(sourceBuf, len: sourceBufLen, key: key, iv: iv))
         }
     }
     
     func testEncryptVariousLenBuffers() throws {
         for pow in 0...14 {
-            let len = 1<<pow
+            let len = 1 << pow
             let sourceBuf = genBufferOfLen(len)
             let key = genBufferOfLen(16)
             let iv = genBufferOfLen(16)
-            let compressedBuf = try encrypt(sourceBuf, len, key, iv)
+            let compressedBuf = try encrypt(sourceBuf, len: len, key: key, iv: iv)
             XCTAssertTrue(compressedBuf.count > 0)
         }
     }
@@ -89,38 +90,40 @@ final class AesStreamTests: XCTestCase {
     }
     
     func testEncryptOddLenBuffers() throws {
-        for len in [1,15,17,31,33,63,65,127,129] {
+        for len in [1, 15, 17, 31, 33, 63, 65, 127, 129] {
             try encryptDecryptBufferOfLen(len)
         }
     }
     
     func testEncryptDecryptVariousLenBuffers() throws {
         for pow in 0...14 {
-            try encryptDecryptBufferOfLen(1<<pow)
+            try encryptDecryptBufferOfLen(1 << pow)
         }
     }
     
     func disabled_testPerformanceEncryptDecrypt1MBFile() throws {
         self.measure {
-            try! encryptDecryptBufferOfLen(1<<20, 32, 1<<15)
+            try! encryptDecryptBufferOfLen(1 << 20, keyLen: 32, chunkSize: 1 << 15)
         }
     }
 }
 
 extension AesStreamTests {
-    func encrypt(_ buffer: UnsafePointer<UInt8>,
-                 _ len: Int,
-                 _ key: [UInt8],
-                 _ iv: [UInt8],
-                 _ chunkSize: Int = AesOutputStream.defaultChunkSize
+    func encrypt(
+        _ buffer: UnsafePointer<UInt8>,
+        len: Int,
+        key: [UInt8],
+        iv: [UInt8],
+        chunkSize: Int = AesOutputStream.defaultChunkSize
     ) throws -> [UInt8] {
         let dataOutputStream = BufferOutputStream()
         try dataOutputStream.open()
         
-        let encryptingStream = AesOutputStream(writingTo: dataOutputStream,
-                                           key: key,
-                                           iv: iv,
-                                           chunkSize: chunkSize)
+        let encryptingStream = AesOutputStream(
+            writingTo: dataOutputStream,
+            key: key,
+            iv: iv,
+            chunkSize: chunkSize)
         try encryptingStream.open()
         try encryptingStream.write(buffer, length: len)
         try encryptingStream.close()
@@ -130,19 +133,24 @@ extension AesStreamTests {
         return resultData
     }
     
-    func decrypt(_ buffer: [UInt8],
-                 _ key: [UInt8],
-                 _ iv: [UInt8],
-                 _ chunkSize: Int = AesInputStream.defaultChunkSize
+    func decrypt(
+        _ buffer: [UInt8],
+        key: [UInt8],
+        iv: [UInt8],
+        chunkSize: Int = AesInputStream.defaultChunkSize
     ) throws -> [UInt8] {
         let dataInputStream = BufferInputStream(withBuffer: buffer)
         try dataInputStream.open()
         
-        let decryptingStream = AesInputStream(readingFrom: dataInputStream, key: key, iv: iv, chunkSize: chunkSize)
+        let decryptingStream = AesInputStream(
+            readingFrom: dataInputStream,
+            key: key,
+            iv: iv,
+            chunkSize: chunkSize)
         try decryptingStream.open()
         
         var result = Array<UInt8>()
-        let bufLen = 1<<16
+        let bufLen = 1 << 16
         var readBuffer = Array<UInt8>(repeating: 0, count: bufLen)
         while decryptingStream.hasBytesAvailable {
             let readLen = try decryptingStream.read(&readBuffer, maxLength: bufLen)
@@ -152,22 +160,25 @@ extension AesStreamTests {
     }
     
     func encryptDecryptBufferOfLen(_ bufLen: Int) throws {
-        for chunkLen in [128,256,512,1024,2048,4096]{
-            for keySize in [16,24,32] {
-                try encryptDecryptBufferOfLen(bufLen, keySize, chunkLen)
+        let chunkLenOptions = [128, 256, 512, 1024, 2048, 4096]
+        let keySizeOptions = [16, 24, 32]
+        for chunkLen in chunkLenOptions {
+            for keySize in keySizeOptions {
+                try encryptDecryptBufferOfLen(bufLen, keyLen: keySize, chunkSize: chunkLen)
             }
         }
     }
     
-    func encryptDecryptBufferOfLen(_ bufLen: Int,
-                                   _ keyLen: Int,
-                                   _ chunkSize: Int
+    func encryptDecryptBufferOfLen(
+        _ bufLen: Int,
+        keyLen: Int,
+        chunkSize: Int
     ) throws {
         let sourceBuf = genBufferOfLen(bufLen)
         let key = genBufferOfLen(keyLen)
         let iv = genBufferOfLen(16)
-        let encryptedBuf = try encrypt(sourceBuf, bufLen, key, iv, chunkSize)
-        let decryptedBuf = try decrypt(encryptedBuf, key, iv, chunkSize)
+        let encryptedBuf = try encrypt(sourceBuf, len: bufLen, key: key, iv: iv, chunkSize: chunkSize)
+        let decryptedBuf = try decrypt(encryptedBuf, key: key, iv: iv, chunkSize: chunkSize)
         XCTAssertNotEqual(sourceBuf, encryptedBuf, "\(bufLen) \(keyLen) \(chunkSize)")
         XCTAssertEqual(sourceBuf, decryptedBuf, "\(bufLen) \(keyLen) \(chunkSize)")
     }

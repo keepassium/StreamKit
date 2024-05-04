@@ -28,8 +28,11 @@ import Foundation
 
 extension XCTestCase {
     func genBufferOfLen(_ len: Int) -> [UInt8] {
-        if len == 0 { return [] }
-        return (0..<len).map { _ in UInt8.random(in: 0...UInt8.max) }
+        if len == 0 {
+            return []
+        }
+        let result = (0..<len).map { _ in UInt8.random(in: 0...UInt8.max) }
+        return result
     }
     
     class private var tmpFolderURL: URL {
@@ -42,8 +45,10 @@ extension XCTestCase {
     }
     
     class func genRandStr(_ length: Int) -> String {
-        let letters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
-        return String((0..<length).map{ _ in letters.randomElement()! })
+        let characters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
+        let randomCharacters = (0..<length).map{ _ in characters.randomElement()! }
+        let result = String(randomCharacters)
+        return result
     }
     
     func genRandStr(_ length: Int) -> String {

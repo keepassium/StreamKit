@@ -37,12 +37,16 @@ public extension OutputStream {
     func write(_ data: Data) throws {
         try data.withUnsafeBytes { urbp in
             try urbp.withMemoryRebound(to: UInt8.self) { buffer in
-                try buffer.baseAddress.map { try write($0, length: data.count) }
+                try buffer.baseAddress.map {
+                    try write($0, length: data.count)
+                }
             }
         }
     }
     
     func write(_ string: String, ofEncoding encoding: String.Encoding) throws {
-        try string.data(using: encoding).map { try write($0) }
+        try string.data(using: encoding).map {
+            try write($0)
+        }
     }
 }

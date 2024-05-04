@@ -25,13 +25,22 @@
 
 import Foundation
 
-extension Data {
+// For package debug only
+internal extension Data {
     init(fromHex str: String) {
-        let stippedSpaces = str.filter { $0 != " " }.map { $0 }
-        let pairs = stride(from: 0, to: stippedSpaces.endIndex, by: 2)
-            .map { (stippedSpaces[$0], $0 < stippedSpaces.index(before: stippedSpaces.endIndex) ? stippedSpaces[$0.advanced(by: 1)] : nil) }
+        let stippedSpaces = str
+            .filter { $0 != " " }
+            .map { $0 }
+
+        let pairs = stride(from: 0, to: stippedSpaces.endIndex, by: 2).map {
+            (
+                stippedSpaces[$0],
+                $0 < stippedSpaces.index(before: stippedSpaces.endIndex)
+                    ? stippedSpaces[$0.advanced(by: 1)]
+                    : nil
+            )
+        }
         let array: [UInt8] = pairs.compactMap { pair in
-            
             let string = String(format: "%@%@", "\(pair.0)", pair.1 != nil ? "\(pair.1!)":"")
             let byte = UInt8(string, radix: 16)
             return byte

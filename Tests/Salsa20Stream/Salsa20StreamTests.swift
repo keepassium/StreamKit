@@ -32,7 +32,7 @@ final class Salsa20CryptorTests: XCTestCase {
         let sourceBuf = genBufferOfLen(sourceBufLen)
         let key = genBufferOfLen(16)
         let iv = genBufferOfLen(16)
-        XCTAssertThrowsError(try encrypt(sourceBuf, sourceBufLen, key, iv))
+        XCTAssertThrowsError(try encrypt(sourceBuf, len: sourceBufLen, key: key, iv: iv))
     }
     
     func testEncryptZeroLenBuffer() throws {
@@ -40,7 +40,7 @@ final class Salsa20CryptorTests: XCTestCase {
         let sourceBuf = genBufferOfLen(sourceBufLen)
         let key = genBufferOfLen(32)
         let iv = genBufferOfLen(8)
-        let encryptedBuf = try encrypt(sourceBuf, sourceBufLen, key, iv)
+        let encryptedBuf = try encrypt(sourceBuf, len: sourceBufLen, key: key, iv: iv)
         XCTAssertTrue(encryptedBuf.count == 0)
     }
     
@@ -49,7 +49,7 @@ final class Salsa20CryptorTests: XCTestCase {
         let sourceBuf = genBufferOfLen(sourceBufLen)
         let key = genBufferOfLen(32)
         let iv = genBufferOfLen(8)
-        let encryptedBuf = try encrypt(sourceBuf, sourceBufLen, key, iv)
+        let encryptedBuf = try encrypt(sourceBuf, len: sourceBufLen, key: key, iv: iv)
         XCTAssertTrue(encryptedBuf.count == 64)
         XCTAssertNotEqual(sourceBuf, encryptedBuf)
     }
@@ -59,7 +59,7 @@ final class Salsa20CryptorTests: XCTestCase {
         let sourceBuf = genBufferOfLen(sourceBufLen)
         let key = genBufferOfLen(32)
         let iv = genBufferOfLen(8)
-        let encryptedBuf = try encrypt(sourceBuf, sourceBufLen, key, iv)
+        let encryptedBuf = try encrypt(sourceBuf, len: sourceBufLen, key: key, iv: iv)
         XCTAssertEqual(65, encryptedBuf.count)
         XCTAssertNotEqual(sourceBuf, encryptedBuf)
     }
@@ -69,22 +69,22 @@ final class Salsa20CryptorTests: XCTestCase {
         let sourceBuf = genBufferOfLen(sourceBufLen)
         let key = genBufferOfLen(32)
         let iv = genBufferOfLen(8)
-        let encryptedBuf = try encrypt(sourceBuf, sourceBufLen, key, iv)
+        let encryptedBuf = try encrypt(sourceBuf, len: sourceBufLen, key: key, iv: iv)
         XCTAssertTrue(encryptedBuf.count == 128)
         XCTAssertNotEqual(sourceBuf, encryptedBuf)
     }
     
     func testEncryptDecryptZeroLenBuffer() throws {
-        try encryptDecryptBufferOfLen(0, 32, 64, 64)
+        try encryptDecryptBufferOfLen(0, keyLen: 32, chunkSize: 64, iterBufSize: 64)
     }
     
     func testEncryptVariousLenBuffers() throws {
         for pow in 0...14 {
-            let sourceBufLen = 1<<pow
+            let sourceBufLen = 1 << pow
             let sourceBuf = genBufferOfLen(sourceBufLen)
             let key = genBufferOfLen(16)
             let iv = genBufferOfLen(8)
-            let encryptedBuf = try encrypt(sourceBuf, sourceBufLen, key, iv)
+            let encryptedBuf = try encrypt(sourceBuf, len: sourceBufLen, key: key, iv: iv)
             XCTAssertTrue(encryptedBuf.count == sourceBuf.count)
             XCTAssertNotEqual(sourceBuf, encryptedBuf)
         }
@@ -92,31 +92,33 @@ final class Salsa20CryptorTests: XCTestCase {
     
     func testEncryptDecryptVariousLenBuffers() throws {
         for pow in 0...14 {
-            try encryptDecryptBufferOfLen(1<<pow)
+            try encryptDecryptBufferOfLen(1 << pow)
         }
     }
     
     func disabled_testPerformanceEncryptDecrypt1MBFile() throws {
         self.measure {
-            try! encryptDecryptBufferOfLen(1<<20)
+            try! encryptDecryptBufferOfLen(1 << 20)
         }
     }
 }
 
 extension Salsa20CryptorTests {
-    func encrypt(_ buffer: UnsafePointer<UInt8>,
-                 _ len: Int,
-                 _ key: [UInt8],
-                 _ iv: [UInt8],
-                 _ chunkSize: Int = Salsa20OutputStream.defaultChunkSize
+    func encrypt(
+        _ buffer: UnsafePointer<UInt8>,
+        len: Int,
+        key: [UInt8],
+        iv: [UInt8],
+        chunkSize: Int = Salsa20OutputStream.defaultChunkSize
     ) throws -> [UInt8] {
         let dataOutputStream = BufferOutputStream()
         try dataOutputStream.open()
         
-        let encryptingStream = Salsa20OutputStream(writingTo: dataOutputStream,
-                                                   key: key,
-                                                   iv: iv,
-                                                   chunkSize: chunkSize)
+        let encryptingStream = Salsa20OutputStream(
+            writingTo: dataOutputStream,
+            key: key,
+            iv: iv,
+            chunkSize: chunkSize)
         try encryptingStream.open()
         try encryptingStream.write(buffer, length: len)
         try encryptingStream.close()
@@ -126,19 +128,21 @@ extension Salsa20CryptorTests {
         return resultData
     }
     
-    func decrypt(_ buffer: [UInt8],
-                 _ key: [UInt8],
-                 _ iv: [UInt8],
-                 _ chunkSize: Int = Salsa20InputStream.defaultChunkSize,
-                 _ iterBufSize: Int
+    func decrypt(
+        _ buffer: [UInt8],
+        key: [UInt8],
+        iv: [UInt8],
+        chunkSize: Int = Salsa20InputStream.defaultChunkSize,
+        iterBufSize: Int
     ) throws -> [UInt8] {
         let dataInputStream = BufferInputStream(withBuffer: buffer)
         try dataInputStream.open()
         
-        let decryptingStream = Salsa20InputStream(readingFrom: dataInputStream,
-                                                  key: key,
-                                                  iv: iv,
-                                                  chunkSize: chunkSize)
+        let decryptingStream = Salsa20InputStream(
+            readingFrom: dataInputStream,
+            key: key,
+            iv: iv,
+            chunkSize: chunkSize)
         try decryptingStream.open()
         
         var result = Array<UInt8>()
@@ -155,22 +159,27 @@ extension Salsa20CryptorTests {
             for chunkSize in [64,65,127,128,129,256] {
                 for keySize in [16,32] {
                     print("\(bufLen) \(keySize) \(chunkSize) \(iterBufSize)  ")
-                    try encryptDecryptBufferOfLen(bufLen, keySize, chunkSize, iterBufSize)
+                    try encryptDecryptBufferOfLen(
+                        bufLen,
+                        keyLen: keySize,
+                        chunkSize: chunkSize,
+                        iterBufSize: iterBufSize)
                 }
             }
         }
     }
     
-    func encryptDecryptBufferOfLen(_ bufLen: Int,
-                                   _ keyLen: Int,
-                                   _ chunkSize: Int = Salsa20OutputStream.defaultChunkSize,
-                                   _ iterBufSize: Int
+    func encryptDecryptBufferOfLen(
+        _ bufLen: Int,
+        keyLen: Int,
+        chunkSize: Int = Salsa20OutputStream.defaultChunkSize,
+        iterBufSize: Int
     ) throws {
         let sourceBuf = genBufferOfLen(bufLen)
         let key = genBufferOfLen(keyLen)
         let iv = genBufferOfLen(8)
-        let encryptedBuf = try encrypt(sourceBuf, bufLen, key, iv, chunkSize)
-        let decryptedBuf = try decrypt(encryptedBuf, key, iv, chunkSize, iterBufSize)
+        let encryptedBuf = try encrypt(sourceBuf, len: bufLen, key: key, iv: iv, chunkSize: chunkSize)
+        let decryptedBuf = try decrypt(encryptedBuf, key: key, iv: iv, chunkSize: chunkSize, iterBufSize: iterBufSize)
         XCTAssertEqual(bufLen, decryptedBuf.count, "\(bufLen) \(keyLen) \(chunkSize)")
         XCTAssertEqual(sourceBuf, decryptedBuf, "\(bufLen) \(keyLen) \(chunkSize)")
     }

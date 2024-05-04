@@ -27,8 +27,8 @@ import Foundation
 import zlib
 
 public final class GzipInputStream: InputStream {
-    public static let defaultDeflateChunkSize = 1<<15
-    public static let defaultInflateChunkSize = 1<<15
+    public static let defaultDeflateChunkSize = 1 << 15
+    public static let defaultInflateChunkSize = 1 << 15
     
     private var zstream: z_stream
     private let nestedStream: InputStream
@@ -45,17 +45,18 @@ public final class GzipInputStream: InputStream {
 
     
     /// - Parameters:
-    public init(readingFrom nestedStream: InputStream,
-                windowBits: Int32 = MAX_WBITS + 16,
-                deflateChunkSize: Int = GzipInputStream.defaultDeflateChunkSize,
-                inflateChunkSize: Int = GzipInputStream.defaultInflateChunkSize) {
     ///   - nestedStream:
     ///   - windowBits: shall be a base 2 logarithm of the maximum window size to use, and shall be a value between 9 and 15.
     ///         If the input data was compressed with a larger window size, subsequent attempts to decompress this data will fail
     ///         with `Z_DATA_ERROR`, rather than try to allocate a larger window.
     ///   - deflateChunkSize:
     ///   - inflateChunkSize:
-        assert(windowBits >= 9 && windowBits <= 15, "windowBits value must be between 9 and 15")
+    public init(
+        readingFrom nestedStream: InputStream,
+        windowBits: Int32 = MAX_WBITS + 16,
+        deflateChunkSize: Int = GzipInputStream.defaultDeflateChunkSize,
+        inflateChunkSize: Int = GzipInputStream.defaultInflateChunkSize
+    ) {
         self.nestedStream = nestedStream
         self.windowBits = windowBits
         self.deflateBufferSize = deflateChunkSize
@@ -95,7 +96,7 @@ public final class GzipInputStream: InputStream {
     }
     
     private var bytesReadyToRead: Int {
-        return inflateBufferSize-inflateUsedLen-inflateAvailableLen
+        return inflateBufferSize - inflateUsedLen - inflateAvailableLen
     }
     
     private var isInflateBufferFull: Bool {
@@ -109,7 +110,7 @@ public final class GzipInputStream: InputStream {
         var remainingLen = maxLength
         while remainingLen > 0 && hasBytesAvailable {
             try fillInflateBuffer()
-            let copiedLen = copyReadyBytesTo(outBuffer+totalReadLen, count: remainingLen)
+            let copiedLen = copyReadyBytesTo(outBuffer + totalReadLen, count: remainingLen)
             totalReadLen += copiedLen
             remainingLen -= copiedLen
         }
@@ -118,7 +119,7 @@ public final class GzipInputStream: InputStream {
     
     private func copyReadyBytesTo(_ outBuffer: UnsafeMutablePointer<UInt8>, count: Int) -> Int {
         let outLen = min(bytesReadyToRead, count)
-        outBuffer.initialize(from: inflateBuffer+inflateUsedLen, count: outLen)
+        outBuffer.initialize(from: inflateBuffer + inflateUsedLen, count: outLen)
         inflateUsedLen += outLen
         if bytesReadyToRead == 0 {
             (inflateUsedLen, inflateAvailableLen) = (0, inflateBufferSize)
@@ -131,7 +132,7 @@ public final class GzipInputStream: InputStream {
             return
         }
 
-        zstream.next_out = (inflateBuffer+inflateBufferSize-inflateAvailableLen)
+        zstream.next_out = (inflateBuffer + inflateBufferSize - inflateAvailableLen)
         zstream.avail_out = uInt(inflateAvailableLen)
         
         if zstream.avail_in == 0 {

@@ -58,9 +58,7 @@ extension StreamKitExtensionsTests {
         let outputFileStream = FileOutputStream(with: outURL)!
         try outputFileStream.open()
         
-        let encryptingStream = Salsa20OutputStream(writingTo: outputFileStream,
-                                                   key: key,
-                                                   iv: iv)
+        let encryptingStream = Salsa20OutputStream(writingTo: outputFileStream, key: key, iv: iv)
         try encryptingStream.open()
                 
         try encryptingStream.write(str, ofEncoding: .utf8)
@@ -70,12 +68,12 @@ extension StreamKitExtensionsTests {
     }
     
     func decryptFileUsingSalsa20(_ encryptedFileURL: URL, _ key: [UInt8], _ iv: [UInt8]) throws -> String? {
-        let inputFileStream = FileInputStream(with: try! FileHandle(forReadingFrom: encryptedFileURL))
+        let inputFileStream = FileInputStream(
+            with: try! FileHandle(forReadingFrom: encryptedFileURL)
+        )
         try inputFileStream.open()
         
-        let decryptingStream = Salsa20InputStream(readingFrom: inputFileStream,
-                                                  key: key,
-                                                  iv: iv)
+        let decryptingStream = Salsa20InputStream(readingFrom: inputFileStream, key: key, iv: iv)
         try decryptingStream.open()
         
         let data = try decryptingStream.readToEnd()

@@ -28,7 +28,7 @@ import Core
 
 
 public final class Salsa20OutputStream: OutputStream {
-    public static let defaultChunkSize = 1<<15
+    public static let defaultChunkSize = 1 << 15
     private var inChunkBuffer: UnsafeMutablePointer<UInt8>
     private var outChunkBuffer: UnsafeMutablePointer<UInt8>
     private let chunkBufferLen: Int
@@ -41,10 +41,12 @@ public final class Salsa20OutputStream: OutputStream {
     private var inChunkBufferAvailableLen: Int
     private let salsa20BlockLen: Int = Int(SALSA20_BLOCKLENGTH)
     
-    public init(writingTo outputStream: OutputStream,
-                key: [UInt8],
-                iv: [UInt8],
-                chunkSize: Int = Salsa20OutputStream.defaultChunkSize) {
+    public init(
+        writingTo outputStream: OutputStream,
+        key: [UInt8],
+        iv: [UInt8],
+        chunkSize: Int = Salsa20OutputStream.defaultChunkSize
+    ) {
         self.nestedStream = outputStream
         self.inChunkBuffer = UnsafeMutablePointer.allocate(capacity: chunkSize)
         self.outChunkBuffer = UnsafeMutablePointer.allocate(capacity: chunkSize)
@@ -80,7 +82,7 @@ public final class Salsa20OutputStream: OutputStream {
         let keySize = key.count
         let ivSize = iv.count
         key.withUnsafeBufferPointer { keyubp in
-            SALSA20_keysetup(&context, keyubp.baseAddress!, u32(keySize*8), u32(ivSize*8))
+            SALSA20_keysetup(&context, keyubp.baseAddress!, u32(keySize * 8), u32(ivSize * 8))
         }
         iv.withUnsafeBufferPointer { ivubp in
             SALSA20_ivsetup(&context, ivubp.baseAddress!)
@@ -93,10 +95,12 @@ public final class Salsa20OutputStream: OutputStream {
         var remainingLen = length
         var totalReadLen = 0
         while remainingLen > 0 {
-            let tookLen = fillChunkBuffer(buffer+totalReadLen, remainingLen)
+            let tookLen = fillChunkBuffer(buffer + totalReadLen, remainingLen)
             remainingLen -= tookLen
             totalReadLen += tookLen
-            if try encryptChunkBuffer() == 0 { break }
+            if try encryptChunkBuffer() == 0 {
+                break
+            }
         }
     }
     
@@ -105,11 +109,11 @@ public final class Salsa20OutputStream: OutputStream {
     }
     
     private var inChunkBufferFilledLen: Int {
-        return chunkBufferLen-inChunkBufferAvailableLen
+        return chunkBufferLen - inChunkBufferAvailableLen
     }
-    
+
     private var inChunkBufferReadyLen: Int {
-        return chunkBufferLen-inChunkBufferDirtyLen-inChunkBufferAvailableLen
+        return chunkBufferLen - inChunkBufferDirtyLen - inChunkBufferAvailableLen
     }
     
     private func fillChunkBuffer(_ buffer: UnsafePointer<UInt8>, _ length: Int) -> Int  {
@@ -117,17 +121,17 @@ public final class Salsa20OutputStream: OutputStream {
             return 0
         }
         
-        let numOfBlocks = min(length, inChunkBufferAvailableLen)/salsa20BlockLen
+        let numOfBlocks = min(length, inChunkBufferAvailableLen) / salsa20BlockLen
         if numOfBlocks > 0 {
-            let tookLen = numOfBlocks*salsa20BlockLen
-            let inBuf = inChunkBuffer+inChunkBufferFilledLen
+            let tookLen = numOfBlocks * salsa20BlockLen
+            let inBuf = inChunkBuffer + inChunkBufferFilledLen
             inBuf.initialize(from: buffer, count: tookLen)
             inChunkBufferAvailableLen -= tookLen
             return tookLen
         }
         else {
             let tookLen = min(length, inChunkBufferAvailableLen)
-            let inBuf = inChunkBuffer+inChunkBufferFilledLen
+            let inBuf = inChunkBuffer + inChunkBufferFilledLen
             inBuf.initialize(from: buffer, count: tookLen)
             inChunkBufferAvailableLen -= tookLen
             return tookLen
@@ -135,10 +139,10 @@ public final class Salsa20OutputStream: OutputStream {
     }
     
     private func encryptChunkBuffer() throws -> Int {
-        let numOfBlocks = inChunkBufferReadyLen/salsa20BlockLen
-        let processBytesLen = numOfBlocks*salsa20BlockLen
+        let numOfBlocks = inChunkBufferReadyLen / salsa20BlockLen
+        let processBytesLen = numOfBlocks * salsa20BlockLen
         if numOfBlocks > 0 {
-            let inBuffer = inChunkBuffer+inChunkBufferDirtyLen
+            let inBuffer = inChunkBuffer + inChunkBufferDirtyLen
             SALSA20_encrypt_blocks(&context, inBuffer, outChunkBuffer, u32(numOfBlocks))
             try nestedStream.write(outChunkBuffer, length: processBytesLen)
             inChunkBufferDirtyLen += processBytesLen
@@ -152,7 +156,7 @@ public final class Salsa20OutputStream: OutputStream {
     public func close() throws {
         guard isOpen else { fatalError("The stream is not opened") }
         if inChunkBufferReadyLen > 0 {
-            let inBuffer = inChunkBuffer+inChunkBufferDirtyLen
+            let inBuffer = inChunkBuffer + inChunkBufferDirtyLen
             SALSA20_encrypt_bytes(&context, inBuffer, outChunkBuffer, u32(inChunkBufferReadyLen))
             try nestedStream.write(outChunkBuffer, length: inChunkBufferReadyLen)
         }

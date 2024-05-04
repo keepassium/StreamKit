@@ -27,7 +27,7 @@ import Foundation
 import CommonCrypto
 
 public final class AesInputStream: InputStream {
-    public static let defaultChunkSize = 1<<15
+    public static let defaultChunkSize = 1 << 15
     private let nestedStream: InputStream
     private var cryptorRef: CCCryptorRef?
     private let bufferSize: Int
@@ -42,11 +42,13 @@ public final class AesInputStream: InputStream {
     private var status: Int32 = 0
     private let options: AesOptions
     
-    public init(readingFrom nestedStream: InputStream,
-                key: [UInt8],
-                iv: [UInt8],
-                options: AesOptions = AesOptions.PKCS7Padding,
-                chunkSize: Int = AesInputStream.defaultChunkSize) {
+    public init(
+        readingFrom nestedStream: InputStream,
+        key: [UInt8],
+        iv: [UInt8],
+        options: AesOptions = AesOptions.PKCS7Padding,
+        chunkSize: Int = AesInputStream.defaultChunkSize
+    ) {
         self.nestedStream = nestedStream
         self.options = options
         self.key = key
@@ -75,13 +77,15 @@ public final class AesInputStream: InputStream {
             throw AesStreamError(kind: .ivSizeError)
         }
         
-        status = CCCryptorCreate(CCOperation(kCCDecrypt),
-                                 CCAlgorithm(kCCAlgorithmAES),
-                                 CCOptions(options),
-                                 key,
-                                 key.count,
-                                 iv,
-                                 &cryptorRef)
+        status = CCCryptorCreate(
+            CCOperation(kCCDecrypt),
+            CCAlgorithm(kCCAlgorithmAES),
+            CCOptions(options),
+            key,
+            key.count,
+            iv,
+            &cryptorRef
+        )
         guard status == kCCSuccess else {
             throw AesStreamError(code: status)
         }
@@ -91,16 +95,16 @@ public final class AesInputStream: InputStream {
         guard isOpen else { fatalError("The stream is not opened") }
         
         var totalReadCount = 0
-        while maxLength-totalReadCount > 0 && hasBytesAvailable {
+        while (maxLength - totalReadCount > 0) && hasBytesAvailable {
             try fillDecryptedBuffer()
-            let readCount = writeOutTo(outBuffer+totalReadCount, count: maxLength-totalReadCount)
+            let readCount = writeOutTo(outBuffer + totalReadCount, count: maxLength - totalReadCount)
             totalReadCount += readCount
         }
         return totalReadCount
     }
     
     private var decryptedBufferReadyLen: Int {
-        return bufferSize-decryptedBufferUsedLen-decryptedBufferAvailableLen
+        return bufferSize - decryptedBufferUsedLen - decryptedBufferAvailableLen
     }
     
     private func fillDecryptedBuffer() throws {
@@ -108,25 +112,29 @@ public final class AesInputStream: InputStream {
             return
         }
         
-        let outBuf = decryptedBuffer+(bufferSize-decryptedBufferAvailableLen)
+        let outBuf = decryptedBuffer + (bufferSize - decryptedBufferAvailableLen)
         let outAvailable = decryptedBufferAvailableLen
         var outMoved = 0
         let readLength = try nestedStream.read(encryptedBuffer, maxLength: bufferSize)
         
         if readLength > 0 {
-            status = CCCryptorUpdate(cryptorRef,
-                                     encryptedBuffer,
-                                     readLength,
-                                     outBuf,
-                                     outAvailable,
-                                     &outMoved)
+            status = CCCryptorUpdate(
+                cryptorRef,
+                encryptedBuffer,
+                readLength,
+                outBuf,
+                outAvailable,
+                &outMoved
+            )
         }
         else if !nestedStream.hasBytesAvailable {
             eofReached = true
-            status = CCCryptorFinal(cryptorRef,
-                                    outBuf,
-                                    outAvailable,
-                                    &outMoved)
+            status = CCCryptorFinal(
+                cryptorRef,
+                outBuf,
+                outAvailable,
+                &outMoved
+            )
         }
         
         guard status == kCCSuccess else {
@@ -137,7 +145,7 @@ public final class AesInputStream: InputStream {
     
     private func writeOutTo(_ outBuffer: UnsafeMutablePointer<UInt8>, count: Int) -> Int {
         let outLen = min(decryptedBufferReadyLen, count)
-        outBuffer.initialize(from: decryptedBuffer+decryptedBufferUsedLen, count: outLen)
+        outBuffer.initialize(from: decryptedBuffer + decryptedBufferUsedLen, count: outLen)
         decryptedBufferUsedLen += outLen
         if decryptedBufferReadyLen == 0 {
             (decryptedBufferUsedLen, decryptedBufferAvailableLen) = (0, bufferSize)

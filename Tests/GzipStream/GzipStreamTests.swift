@@ -30,7 +30,7 @@ final class GzipStreamTests: XCTestCase {
     func testCompressZeroLenBuffer() throws {
         let len = 0
         let sourceBuf = genBufferOfLen(len)
-        let compressedBuf = try compress(sourceBuf, len)
+        let compressedBuf = try compress(sourceBuf, len: len)
         XCTAssertTrue(compressedBuf.count > 0)
     }
     
@@ -38,7 +38,7 @@ final class GzipStreamTests: XCTestCase {
         for i in 0...14 {
             let len = 1<<i
             let sourceBuf = genBufferOfLen(len)
-            let compressedBuf = try compress(sourceBuf, len)
+            let compressedBuf = try compress(sourceBuf, len: len)
             XCTAssertTrue(compressedBuf.count > 0)
         }
     }
@@ -54,36 +54,53 @@ final class GzipStreamTests: XCTestCase {
     }
     
     func testCompressDecompressOddLenBuffers() throws {
-        for len in [1,15,17,31,33,63,65,127,129] {
+        let lenOptions = [1, 15, 17, 31, 33, 63, 65, 127, 129]
+        for len in lenOptions {
             try compressDecompressBufferOfLen(len)
         }
     }
     
     func testCompressDecompressEmptyBufferWithVariousWindowSizes() throws {
         for windowSize in stride(from: Int32(9), to: 15, by: 1) {
-            try compressDecompressBufferOfLen(0, windowSize, 8, .defaultCompression, 8, 8)
+            try compressDecompressBufferOfLen(
+                0,
+                windowBits: windowSize,
+                compressChunk: 8,
+                compressionLevel: .defaultCompression,
+                decompressInChunk: 8,
+                decompressOutChunk: 8
+            )
         }
     }
     
     func disabled_testPerformanceCompressDecompress1MBFile() throws {
         self.measure {
-            try! compressDecompressBufferOfLen(1<<20, 15, 1<<15, .defaultCompression, 1<<15, 1<<15)
+            try! compressDecompressBufferOfLen(
+                1 << 20,
+                windowBits: 15,
+                compressChunk: 1 << 15,
+                compressionLevel: .defaultCompression,
+                decompressInChunk: 1 << 15,
+                decompressOutChunk: 1 << 15
+            )
         }
     }
 }
 
 extension GzipStreamTests {
-    func compress(_ buffer: UnsafePointer<UInt8>,
-                  _ len: Int,
-                  _ windowBits: Int32 = 15,
-                  _ compressedBufferSize: Int = GzipOutputStream.defaultDeflateChunkSize
+    func compress(
+        _ buffer: UnsafePointer<UInt8>,
+        len: Int,
+        windowBits: Int32 = 15,
+        chunkSize: Int = GzipOutputStream.defaultDeflateChunkSize
     ) throws -> [UInt8] {
         let dataOutputStream = BufferOutputStream()
         try dataOutputStream.open()
         
-        let compressStream = GzipOutputStream(writingTo: dataOutputStream,
-                                              windowBits: windowBits,
-                                              deflateChunkSize: compressedBufferSize)
+        let compressStream = GzipOutputStream(
+            writingTo: dataOutputStream,
+            windowBits: windowBits,
+            deflateChunkSize: chunkSize)
         try compressStream.open()
         try compressStream.write(buffer, length: len)
         try! compressStream.close()
@@ -93,22 +110,24 @@ extension GzipStreamTests {
         return resultData
     }
     
-    func decompress(_ buffer: [UInt8],
-                    _ windowBits: Int32 = 15,
-                    _ inChunkSize: Int = GzipInputStream.defaultDeflateChunkSize,
-                    _ outChunkSize: Int = GzipInputStream.defaultInflateChunkSize
+    func decompress(
+        _ buffer: [UInt8],
+        windowBits: Int32 = 15,
+        inChunkSize: Int = GzipInputStream.defaultDeflateChunkSize,
+        outChunkSize: Int = GzipInputStream.defaultInflateChunkSize
     ) throws -> [UInt8] {
         let dataInputStream = BufferInputStream(withBuffer: buffer)
         try dataInputStream.open()
         
-        let decompressStream = GzipInputStream(readingFrom: dataInputStream,
-                                               windowBits: windowBits,
-                                               deflateChunkSize: inChunkSize,
-                                               inflateChunkSize: outChunkSize)
+        let decompressStream = GzipInputStream(
+            readingFrom: dataInputStream,
+            windowBits: windowBits,
+            deflateChunkSize: inChunkSize,
+            inflateChunkSize: outChunkSize)
         try decompressStream.open()
         
         var result = Array<UInt8>()
-        let tmpBufLen = 1<<16
+        let tmpBufLen = 1 << 16
         var tmpBuffer = Array<UInt8>(repeating: 0, count: tmpBufLen)
         while decompressStream.hasBytesAvailable {
             let readLen = try decompressStream.read(&tmpBuffer, maxLength: tmpBufLen)
@@ -122,31 +141,35 @@ extension GzipStreamTests {
         for chunkSize in chunkSizes {
             for inChunkSize in chunkSizes {
                 for outChunkSize in chunkSizes {
-                    try compressDecompressBufferOfLen(len,
-                                                      15,
-                                                      chunkSize,
-                                                      GzipCompressionLevel.defaultCompression,
-                                                      inChunkSize,
-                                                      outChunkSize)
+                    try compressDecompressBufferOfLen(
+                        len,
+                        windowBits: 15,
+                        compressChunk: chunkSize,
+                        compressionLevel: .defaultCompression,
+                        decompressInChunk: inChunkSize,
+                        decompressOutChunk: outChunkSize
+                    )
                 }
             }
         }
         
     }
     
-    func compressDecompressBufferOfLen(_ len: Int,
-                                       _ windowBits: Int32 = 15,
-                                       _ compressChunk: Int,
-                                       _ compressionLevel: GzipCompressionLevel = .defaultCompression,
-                                       _ decompressInChunk: Int,
-                                       _ decompressOutChunk: Int
+    func compressDecompressBufferOfLen(
+        _ len: Int,
+        windowBits: Int32 = 15,
+        compressChunk: Int,
+        compressionLevel: GzipCompressionLevel = .defaultCompression,
+        decompressInChunk: Int,
+        decompressOutChunk: Int
     ) throws {
         let sourceBuf: [UInt8] = genBufferOfLen(len)
-        let compressedBuf = try compress(sourceBuf, len, windowBits, compressChunk)
-        var decompressedBuf = try decompress(compressedBuf,
-                                             windowBits,
-                                             decompressInChunk,
-                                             decompressOutChunk)
+        let compressedBuf = try compress(sourceBuf, len: len, windowBits: windowBits, chunkSize: compressChunk)
+        var decompressedBuf = try decompress(
+            compressedBuf,
+            windowBits: windowBits,
+            inChunkSize: decompressInChunk,
+            outChunkSize: decompressOutChunk)
         XCTAssertEqual(len, decompressedBuf.count)
         XCTAssertEqual(memcmp(sourceBuf, &decompressedBuf, len), 0)
     }

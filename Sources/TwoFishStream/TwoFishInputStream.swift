@@ -27,7 +27,7 @@ import Foundation
 import Core
 
 public final class TwoFishInputStream: InputStream {
-    public static let defaultChunkSize = 1<<15
+    public static let defaultChunkSize = 1 << 15
     private let nestedStream: InputStream
     private let bufferSize: Int
     private var encryptedBuffer: UnsafeMutablePointer<UInt8>
@@ -44,10 +44,12 @@ public final class TwoFishInputStream: InputStream {
     private let blockLen = 16
     private var status: Int32 = 0
     
-    public init(readingFrom nestedStream: InputStream,
-                key: [UInt8],
-                iv: [UInt8],
-                chunkSize: Int = TwoFishInputStream.defaultChunkSize) {
+    public init(
+        readingFrom nestedStream: InputStream,
+        key: [UInt8],
+        iv: [UInt8],
+        chunkSize: Int = TwoFishInputStream.defaultChunkSize
+    ) {
         self.nestedStream = nestedStream
         self.key = key
         self.encryptedBuffer = UnsafeMutablePointer<UInt8>.allocate(capacity: chunkSize)
@@ -101,7 +103,7 @@ public final class TwoFishInputStream: InputStream {
             else {
                 try decryptRemaining()
             }
-            let readCount = writeOutTo(outBuffer+totalReadCount, count: remainingLen)
+            let readCount = writeOutTo(outBuffer + totalReadCount, count: remainingLen)
             if readCount == 0 { break }
             remainingLen -= readCount
             totalReadCount += readCount
@@ -110,11 +112,11 @@ public final class TwoFishInputStream: InputStream {
     }
     
     private var encryptedBufferReadyLen: Int {
-        return bufferSize-encryptedBufferDirtyLen-encryptedBufferAvailableLen
+        return bufferSize - encryptedBufferDirtyLen - encryptedBufferAvailableLen
     }
     
     private var encryptedBufferFilledLen: Int {
-        return bufferSize-encryptedBufferAvailableLen
+        return bufferSize - encryptedBufferAvailableLen
     }
     
     private var isEncryptedBufferFull: Bool {
@@ -126,8 +128,8 @@ public final class TwoFishInputStream: InputStream {
             return
         }
         
-        let canTake = encryptedBufferAvailableLen/blockLen*blockLen
-        let inBuf = encryptedBuffer+encryptedBufferFilledLen
+        let canTake = encryptedBufferAvailableLen / blockLen * blockLen
+        let inBuf = encryptedBuffer + encryptedBufferFilledLen
         let readLen = try nestedStream.read(inBuf, maxLength: canTake)
         if !nestedStream.hasBytesAvailable {
             eofReached = true
@@ -137,11 +139,11 @@ public final class TwoFishInputStream: InputStream {
     
     
     private var decryptedBufferReadyLen: Int {
-        return bufferSize-decryptedBufferDirtyLen-decryptedBufferAvailableLen
+        return bufferSize - decryptedBufferDirtyLen - decryptedBufferAvailableLen
     }
     
     private var decryptedBufferFilledLen: Int {
-        return bufferSize-decryptedBufferAvailableLen
+        return bufferSize - decryptedBufferAvailableLen
     }
     
     private func decryptBlocks() throws {
@@ -151,18 +153,18 @@ public final class TwoFishInputStream: InputStream {
         
         let inBufAvailable = encryptedBufferReadyLen
         let outBufAvailable = decryptedBufferAvailableLen
-        let numOfBlocks = min(inBufAvailable,outBufAvailable)/blockLen
+        let numOfBlocks = min(inBufAvailable, outBufAvailable) / blockLen
         if numOfBlocks > 0 {
-            let processBytesLen = numOfBlocks*blockLen
-            let inBuffer = encryptedBuffer+encryptedBufferDirtyLen
-            let outBuffer = decryptedBuffer+decryptedBufferFilledLen
+            let processBytesLen = numOfBlocks * blockLen
+            let inBuffer = encryptedBuffer + encryptedBufferDirtyLen
+            let outBuffer = decryptedBuffer + decryptedBufferFilledLen
             for n in 0..<numOfBlocks {
-                let blockStartPos = n*blockLen
-                Twofish_decrypt(&context, inBuffer+blockStartPos, outBuffer+blockStartPos)
+                let blockStartPos = n * blockLen
+                Twofish_decrypt(&context, inBuffer + blockStartPos, outBuffer + blockStartPos)
                 for i in 0..<blockLen {
-                    (outBuffer+blockStartPos)[i] ^= iv[i]
+                    (outBuffer + blockStartPos)[i] ^= iv[i]
                 }
-                memcpy(&iv, inBuffer+blockStartPos, blockLen)
+                memcpy(&iv, inBuffer + blockStartPos, blockLen)
             }
             encryptedBufferDirtyLen += processBytesLen
             if encryptedBufferReadyLen == 0 {
@@ -174,11 +176,11 @@ public final class TwoFishInputStream: InputStream {
     
     private func decryptRemaining() throws {
         if encryptedBufferReadyLen > 0 && decryptedBufferAvailableLen >= encryptedBufferReadyLen {
-            let numOfBlocks = min(encryptedBufferReadyLen,decryptedBufferAvailableLen)/blockLen
+            let numOfBlocks = min(encryptedBufferReadyLen, decryptedBufferAvailableLen) / blockLen
             if numOfBlocks > 0 {
                 for _ in 0..<numOfBlocks {
-                    let inBuffer = encryptedBuffer+encryptedBufferDirtyLen
-                    let outBuffer = decryptedBuffer+decryptedBufferFilledLen
+                    let inBuffer = encryptedBuffer + encryptedBufferDirtyLen
+                    let outBuffer = decryptedBuffer + decryptedBufferFilledLen
                     Twofish_decrypt(&context, inBuffer, outBuffer)
                     for i in 0..<blockLen {
                         (outBuffer)[i] ^= iv[i]
@@ -192,7 +194,7 @@ public final class TwoFishInputStream: InputStream {
                 }
             }
 
-            guard encryptedBufferReadyLen%blockLen == 0 else {
+            guard encryptedBufferReadyLen % blockLen == 0 else {
                 throw TwoFishStreamError(kind: .dataNotAligned)
             }
             
@@ -204,7 +206,7 @@ public final class TwoFishInputStream: InputStream {
     
     private func removePaddinDataFromDecryptedBuffer() {
         if decryptedBufferReadyLen > 0 {
-            let lastByte = (decryptedBuffer+decryptedBufferFilledLen-1).pointee
+            let lastByte = (decryptedBuffer + decryptedBufferFilledLen - 1).pointee
             decryptedBufferAvailableLen += Int(lastByte)
         }
     }
@@ -212,7 +214,7 @@ public final class TwoFishInputStream: InputStream {
     private func writeOutTo(_ outBuffer: UnsafeMutablePointer<UInt8>, count: Int) -> Int {
         let outLen = min(decryptedBufferReadyLen, count)
         if outLen > 0 {
-            outBuffer.initialize(from: decryptedBuffer+decryptedBufferDirtyLen, count: outLen)
+            outBuffer.initialize(from: decryptedBuffer + decryptedBufferDirtyLen, count: outLen)
             decryptedBufferDirtyLen += outLen
             if decryptedBufferReadyLen == 0 {
                 (decryptedBufferDirtyLen, decryptedBufferAvailableLen) = (0, bufferSize)

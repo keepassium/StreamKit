@@ -164,12 +164,10 @@ extension StreamKitTests {
         let outputFileStream = FileOutputStream(with: try! FileHandle(forWritingTo: encryptedFileURL))
         try outputFileStream.open()
         
-        let encryptingStream = Salsa20OutputStream(writingTo: outputFileStream,
-                                                   key: key,
-                                                   iv: iv)
+        let encryptingStream = Salsa20OutputStream(writingTo: outputFileStream, key: key, iv: iv)
         try encryptingStream.open()
         
-        let tmpBufferLen = 1<<16 // 65KB buffer
+        let tmpBufferLen = 1 << 16 // 65 KB buffer
         var tmpBuffer = Array<UInt8>(repeating: 0, count: tmpBufferLen)
         while inputFileStream.hasBytesAvailable {
             let readLen = inputFileStream.read(&tmpBuffer, maxLength: tmpBufferLen)
@@ -191,15 +189,13 @@ extension StreamKitTests {
         let outputFileStream = FileOutputStream(with: try! FileHandle(forWritingTo: decryptedFileURL))
         try outputFileStream.open()
         
-        let decryptingStream = Salsa20InputStream(readingFrom: inputFileStream,
-                                                  key: key,
-                                                  iv: iv)
+        let decryptingStream = Salsa20InputStream(readingFrom: inputFileStream, key: key, iv: iv)
         try decryptingStream.open()
         
         let decompressingStream = GzipInputStream(readingFrom: decryptingStream)
         try decompressingStream.open()
         
-        let tmpBufferLen = 1<<16 // 65KB buffer
+        let tmpBufferLen = 1 << 16 // 65 KB buffer
         var tmpBuffer = Array<UInt8>(repeating: 0, count: tmpBufferLen)
         while decryptingStream.hasBytesAvailable {
             let readLen = try decompressingStream.read(&tmpBuffer, maxLength: tmpBufferLen)
@@ -221,15 +217,13 @@ extension StreamKitTests {
         let outputFileStream = FileOutputStream(with: try! FileHandle(forWritingTo: encryptedFileURL))
         try outputFileStream.open()
         
-        let encryptingStream = Salsa20OutputStream(writingTo: outputFileStream,
-                                                   key: key,
-                                                   iv: iv)
+        let encryptingStream = Salsa20OutputStream(writingTo: outputFileStream, key: key, iv: iv)
         try encryptingStream.open()
         
         let compressingStream = GzipOutputStream(writingTo: encryptingStream)
         try compressingStream.open()
         
-        let tmpBufferLen = 1<<16 // 65KB buffer
+        let tmpBufferLen = 1 << 16 // 65 KB buffer
         var tmpBuffer = Array<UInt8>(repeating: 0, count: tmpBufferLen)
         while inputFileStream.hasBytesAvailable {
             let readLen = inputFileStream.read(&tmpBuffer, maxLength: tmpBufferLen)
@@ -252,12 +246,10 @@ extension StreamKitTests {
         let outputFileStream = FileOutputStream(with: try! FileHandle(forWritingTo: decryptedFileURL))
         try outputFileStream.open()
         
-        let decryptingStream = Salsa20InputStream(readingFrom: inputFileStream,
-                                                  key: key,
-                                                  iv: iv)
+        let decryptingStream = Salsa20InputStream(readingFrom: inputFileStream, key: key, iv: iv)
         try decryptingStream.open()
         
-        let tmpBufferLen = 1<<16 // 65KB buffer
+        let tmpBufferLen = 1 << 16 // 65 KB buffer
         var tmpBuffer = Array<UInt8>(repeating: 0, count: tmpBufferLen)
         while decryptingStream.hasBytesAvailable {
             let readLen = try decryptingStream.read(&tmpBuffer, maxLength: tmpBufferLen)
@@ -278,12 +270,10 @@ extension StreamKitTests {
         let outputFileStream = FileOutputStream(with: try! FileHandle(forWritingTo: encryptedFileURL))
         try outputFileStream.open()
         
-        let encryptingStream = ChaCha20OutputStream(writingTo: outputFileStream,
-                                                    key: key,
-                                                    iv: iv)
+        let encryptingStream = ChaCha20OutputStream(writingTo: outputFileStream, key: key, iv: iv)
         try encryptingStream.open()
         
-        let tmpBufferLen = 1<<16 // 65KB buffer
+        let tmpBufferLen = 1 << 16 // 65 KB buffer
         var tmpBuffer = Array<UInt8>(repeating: 0, count: tmpBufferLen)
         while inputFileStream.hasBytesAvailable {
             let readLen = inputFileStream.read(&tmpBuffer, maxLength: tmpBufferLen)
@@ -305,12 +295,10 @@ extension StreamKitTests {
         let outputFileStream = FileOutputStream(with: try! FileHandle(forWritingTo: decryptedFileURL))
         try outputFileStream.open()
         
-        let decryptingStream = ChaCha20InputStream(readingFrom: inputFileStream,
-                                                   key: key,
-                                                   iv: iv)
+        let decryptingStream = ChaCha20InputStream(readingFrom: inputFileStream, key: key, iv: iv)
         try decryptingStream.open()
         
-        let tmpBufferLen = 1<<16 // 65KB buffer
+        let tmpBufferLen = 1 << 16 // 65 KB buffer
         var tmpBuffer = Array<UInt8>(repeating: 0, count: tmpBufferLen)
         while decryptingStream.hasBytesAvailable {
             let readLen = try decryptingStream.read(&tmpBuffer, maxLength: tmpBufferLen)
@@ -331,15 +319,13 @@ extension StreamKitTests {
         let outputFileStream = FileOutputStream(with: try! FileHandle(forWritingTo: encryptedFileURL))
         try outputFileStream.open()
         
-        let encryptingStream = ChaCha20OutputStream(writingTo: outputFileStream,
-                                                    key: key,
-                                                    iv: iv)
+        let encryptingStream = ChaCha20OutputStream(writingTo: outputFileStream, key: key, iv: iv)
         try encryptingStream.open()
         
         let compressingStream = GzipOutputStream(writingTo: encryptingStream)
         try compressingStream.open()
         
-        let tmpBufferLen = 1<<16 // 65KB buffer
+        let tmpBufferLen = 1 << 16 // 65 KB buffer
         var tmpBuffer = Array<UInt8>(repeating: 0, count: tmpBufferLen)
         while inputFileStream.hasBytesAvailable {
             let readLen = inputFileStream.read(&tmpBuffer, maxLength: tmpBufferLen)
@@ -362,15 +348,13 @@ extension StreamKitTests {
         let outputFileStream = FileOutputStream(with: try! FileHandle(forWritingTo: decryptedFileURL))
         try outputFileStream.open()
         
-        let decryptingStream = ChaCha20InputStream(readingFrom: inputFileStream,
-                                                   key: key,
-                                                   iv: iv)
+        let decryptingStream = ChaCha20InputStream(readingFrom: inputFileStream, key: key, iv: iv)
         try decryptingStream.open()
         
         let decompressingStream = GzipInputStream(readingFrom: decryptingStream)
         try decompressingStream.open()
         
-        let tmpBufferLen = 1<<16 // 65KB buffer
+        let tmpBufferLen = 1 << 16 // 65 KB buffer
         var tmpBuffer = Array<UInt8>(repeating: 0, count: tmpBufferLen)
         while decryptingStream.hasBytesAvailable {
             let readLen = try decompressingStream.read(&tmpBuffer, maxLength: tmpBufferLen)
@@ -392,12 +376,10 @@ extension StreamKitTests {
         let outputFileStream = FileOutputStream(with: try! FileHandle(forWritingTo: encryptedFileURL))
         try outputFileStream.open()
         
-        let encryptingStream = AesOutputStream(writingTo: outputFileStream,
-                                               key: key,
-                                               iv: iv)
+        let encryptingStream = AesOutputStream(writingTo: outputFileStream, key: key, iv: iv)
         try encryptingStream.open()
         
-        let tmpBufferLen = 1<<16 // 65KB buffer
+        let tmpBufferLen = 1 << 16 // 65 KB buffer
         var tmpBuffer = Array<UInt8>(repeating: 0, count: tmpBufferLen)
         while inputFileStream.hasBytesAvailable {
             let readLen = inputFileStream.read(&tmpBuffer, maxLength: tmpBufferLen)
@@ -419,15 +401,13 @@ extension StreamKitTests {
         let outputFileStream = FileOutputStream(with: try! FileHandle(forWritingTo: encryptedFileURL))
         try outputFileStream.open()
         
-        let encryptingStream = AesOutputStream(writingTo: outputFileStream,
-                                               key: key,
-                                               iv: iv)
+        let encryptingStream = AesOutputStream(writingTo: outputFileStream, key: key, iv: iv)
         try encryptingStream.open()
         
         let compressingStream = GzipOutputStream(writingTo: encryptingStream)
         try compressingStream.open()
         
-        let tmpBufferLen = 1<<16 // 65KB buffer
+        let tmpBufferLen = 1 << 16 // 65 KB buffer
         var tmpBuffer = Array<UInt8>(repeating: 0, count: tmpBufferLen)
         while inputFileStream.hasBytesAvailable {
             let readLen = inputFileStream.read(&tmpBuffer, maxLength: tmpBufferLen)
@@ -450,12 +430,10 @@ extension StreamKitTests {
         let outputFileStream = FileOutputStream(with: try! FileHandle(forWritingTo: decryptedFileURL))
         try outputFileStream.open()
         
-        let decryptingStream = AesInputStream(readingFrom: inputFileStream,
-                                              key: key,
-                                              iv: iv)
+        let decryptingStream = AesInputStream(readingFrom: inputFileStream, key: key, iv: iv)
         try decryptingStream.open()
         
-        let tmpBufferLen = 1<<16 // 65KB buffer
+        let tmpBufferLen = 1 << 16 // 65 KB buffer
         var tmpBuffer = Array<UInt8>(repeating: 0, count: tmpBufferLen)
         while decryptingStream.hasBytesAvailable {
             let readLen = try decryptingStream.read(&tmpBuffer, maxLength: tmpBufferLen)
@@ -476,15 +454,13 @@ extension StreamKitTests {
         let outputFileStream = FileOutputStream(with: try! FileHandle(forWritingTo: decryptedFileURL))
         try outputFileStream.open()
         
-        let decryptingStream = AesInputStream(readingFrom: inputFileStream,
-                                              key: key,
-                                              iv: iv)
+        let decryptingStream = AesInputStream(readingFrom: inputFileStream, key: key, iv: iv)
         try decryptingStream.open()
         
         let decompressingStream = GzipInputStream(readingFrom: decryptingStream)
         try decompressingStream.open()
         
-        let tmpBufferLen = 1<<16 // 65KB buffer
+        let tmpBufferLen = 1 << 16 // 65 KB buffer
         var tmpBuffer = Array<UInt8>(repeating: 0, count: tmpBufferLen)
         while decryptingStream.hasBytesAvailable {
             let readLen = try decompressingStream.read(&tmpBuffer, maxLength: tmpBufferLen)
@@ -508,7 +484,7 @@ extension StreamKitTests {
         let compressingStream = GzipOutputStream(writingTo: outputFileStream)
         try compressingStream.open()
         
-        let tmpBufferLen = 1<<16 // 65KB buffer
+        let tmpBufferLen = 1 << 16 // 65 KB buffer
         var tmpBuffer = Array<UInt8>(repeating: 0, count: tmpBufferLen)
         while inputFileStream.hasBytesAvailable {
             let readLen = inputFileStream.read(&tmpBuffer, maxLength: tmpBufferLen)
@@ -533,7 +509,7 @@ extension StreamKitTests {
         let decompressingStream = GzipInputStream(readingFrom: inputFileStream)
         try decompressingStream.open()
         
-        let tmpBufferLen = 1<<16 // 65KB buffer
+        let tmpBufferLen = 1 << 16 // 65 KB buffer
         var tmpBuffer = Array<UInt8>(repeating: 0, count: tmpBufferLen)
         while decompressingStream.hasBytesAvailable {
             let readLen = try decompressingStream.read(&tmpBuffer, maxLength: tmpBufferLen)
@@ -554,12 +530,10 @@ extension StreamKitTests {
         let outputFileStream = FileOutputStream(with: try! FileHandle(forWritingTo: encryptedFileURL))
         try outputFileStream.open()
         
-        let encryptingStream = TwoFishOutputStream(writingTo: outputFileStream,
-                                                   key: key,
-                                                   iv: iv)
+        let encryptingStream = TwoFishOutputStream(writingTo: outputFileStream, key: key, iv: iv)
         try encryptingStream.open()
         
-        let tmpBufferLen = 1<<16 // 65KB buffer
+        let tmpBufferLen = 1 << 16 // 65 KB buffer
         var tmpBuffer = Array<UInt8>(repeating: 0, count: tmpBufferLen)
         while inputFileStream.hasBytesAvailable {
             let readLen = inputFileStream.read(&tmpBuffer, maxLength: tmpBufferLen)
@@ -581,12 +555,10 @@ extension StreamKitTests {
         let outputFileStream = FileOutputStream(with: try! FileHandle(forWritingTo: decryptedFileURL))
         try outputFileStream.open()
         
-        let decryptingStream = TwoFishInputStream(readingFrom: inputFileStream,
-                                                  key: key,
-                                                  iv: iv)
+        let decryptingStream = TwoFishInputStream(readingFrom: inputFileStream, key: key, iv: iv)
         try decryptingStream.open()
         
-        let tmpBufferLen = 1<<16 // 65KB buffer
+        let tmpBufferLen = 1 << 16 // 65 KB buffer
         var tmpBuffer = Array<UInt8>(repeating: 0, count: tmpBufferLen)
         while decryptingStream.hasBytesAvailable {
             let readLen = try decryptingStream.read(&tmpBuffer, maxLength: tmpBufferLen)
@@ -607,15 +579,13 @@ extension StreamKitTests {
         let outputFileStream = FileOutputStream(with: try! FileHandle(forWritingTo: encryptedFileURL))
         try outputFileStream.open()
         
-        let encryptingStream = TwoFishOutputStream(writingTo: outputFileStream,
-                                                   key: key,
-                                                   iv: iv)
+        let encryptingStream = TwoFishOutputStream(writingTo: outputFileStream, key: key, iv: iv)
         try encryptingStream.open()
         
         let compressingStream = GzipOutputStream(writingTo: encryptingStream)
         try compressingStream.open()
                 
-        let tmpBufferLen = 1<<16 // 65KB buffer
+        let tmpBufferLen = 1 << 16 // 65 KB buffer
         var tmpBuffer = Array<UInt8>(repeating: 0, count: tmpBufferLen)
         while inputFileStream.hasBytesAvailable {
             let readLen = inputFileStream.read(&tmpBuffer, maxLength: tmpBufferLen)
@@ -638,15 +608,13 @@ extension StreamKitTests {
         let outputFileStream = FileOutputStream(with: try! FileHandle(forWritingTo: decryptedFileURL))
         try outputFileStream.open()
         
-        let decryptingStream = TwoFishInputStream(readingFrom: inputFileStream,
-                                                  key: key,
-                                                  iv: iv)
+        let decryptingStream = TwoFishInputStream(readingFrom: inputFileStream, key: key, iv: iv)
         try decryptingStream.open()
         
         let decompressingStream = GzipInputStream(readingFrom: decryptingStream)
         try decompressingStream.open()
         
-        let tmpBufferLen = 1<<16 // 65KB buffer
+        let tmpBufferLen = 1 << 16 // 65 KB buffer
         var tmpBuffer = Array<UInt8>(repeating: 0, count: tmpBufferLen)
         while decryptingStream.hasBytesAvailable {
             let readLen = try decompressingStream.read(&tmpBuffer, maxLength: tmpBufferLen)
@@ -659,5 +627,4 @@ extension StreamKitTests {
         try inputFileStream.close()
         return decryptedFileURL
     }
-    
 }

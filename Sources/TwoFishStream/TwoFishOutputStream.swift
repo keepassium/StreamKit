@@ -27,7 +27,7 @@ import Foundation
 import Core
 
 public final class TwoFishOutputStream: OutputStream {
-    public static let defaultChunkSize = 1<<15
+    public static let defaultChunkSize = 1 << 15
     private var inChunkBuffer: UnsafeMutablePointer<UInt8>
     private var outChunkBuffer: UnsafeMutablePointer<UInt8>
     private let chunkBufferLen: Int
@@ -41,10 +41,12 @@ public final class TwoFishOutputStream: OutputStream {
     private let blockLen = 16
     private var status: Int32 = 0
     
-    public init(writingTo outputStream: OutputStream,
-                key: [UInt8],
-                iv: [UInt8],
-                chunkSize: Int = TwoFishOutputStream.defaultChunkSize) {
+    public init(
+        writingTo outputStream: OutputStream,
+        key: [UInt8],
+        iv: [UInt8],
+        chunkSize: Int = TwoFishOutputStream.defaultChunkSize
+    ) {
         self.nestedStream = outputStream
         self.inChunkBuffer = UnsafeMutablePointer.allocate(capacity: chunkSize)
         self.outChunkBuffer = UnsafeMutablePointer.allocate(capacity: chunkSize)
@@ -89,7 +91,7 @@ public final class TwoFishOutputStream: OutputStream {
         var remainingLen = length
         var totalReadLen = 0
         while remainingLen > 0 {
-            let tookLen = fillChunkBuffer(buffer+totalReadLen, remainingLen)
+            let tookLen = fillChunkBuffer(buffer + totalReadLen, remainingLen)
             remainingLen -= tookLen
             totalReadLen += tookLen
             if try encryptChunkBuffer() == 0 { break }
@@ -105,7 +107,7 @@ public final class TwoFishOutputStream: OutputStream {
     }
     
     private var inChunkBufferReadyLen: Int {
-        return chunkBufferLen-inChunkBufferDirtyLen-inChunkBufferAvailableLen
+        return chunkBufferLen - inChunkBufferDirtyLen - inChunkBufferAvailableLen
     }
     
     private func fillChunkBuffer(_ buffer: UnsafePointer<UInt8>, _ length: Int) -> Int  {
@@ -113,17 +115,17 @@ public final class TwoFishOutputStream: OutputStream {
             return 0
         }
         
-        let numOfBlocks = min(length, inChunkBufferAvailableLen)/blockLen
+        let numOfBlocks = min(length, inChunkBufferAvailableLen) / blockLen
         if numOfBlocks > 0 {
-            let tookLen = numOfBlocks*blockLen
-            let inBuf = inChunkBuffer+inChunkBufferFilledLen
+            let tookLen = numOfBlocks * blockLen
+            let inBuf = inChunkBuffer + inChunkBufferFilledLen
             inBuf.initialize(from: buffer, count: tookLen)
             inChunkBufferAvailableLen -= tookLen
             return tookLen
         }
         else {
             let tookLen = min(length, inChunkBufferAvailableLen)
-            let inBuf = inChunkBuffer+inChunkBufferFilledLen
+            let inBuf = inChunkBuffer + inChunkBufferFilledLen
             inBuf.initialize(from: buffer, count: tookLen)
             inChunkBufferAvailableLen -= tookLen
             return tookLen
@@ -131,19 +133,19 @@ public final class TwoFishOutputStream: OutputStream {
     }
     
     private func encryptChunkBuffer() throws -> Int {
-        let numOfBlocks = inChunkBufferReadyLen/blockLen
-        let processBytesLen = numOfBlocks*blockLen
+        let numOfBlocks = inChunkBufferReadyLen / blockLen
+        let processBytesLen = numOfBlocks * blockLen
         if numOfBlocks > 0 {
-            let inBuffer = inChunkBuffer+inChunkBufferDirtyLen
+            let inBuffer = inChunkBuffer + inChunkBufferDirtyLen
             var block: [UInt8] = Array(repeating: 0, count: blockLen)
             for n in 0..<numOfBlocks {
-                let blockStartPos = n*blockLen
+                let blockStartPos = n * blockLen
                 for i in 0..<blockLen {
                     block[i] = inBuffer[blockStartPos + i]^iv[i]
                 }
-                Twofish_encrypt(&context, &block, outChunkBuffer+blockStartPos)
+                Twofish_encrypt(&context, &block, outChunkBuffer + blockStartPos)
                 for i in 0..<blockLen {
-                    iv[i] = (outChunkBuffer+blockStartPos)[i]
+                    iv[i] = (outChunkBuffer + blockStartPos)[i]
                 }
             }
             try nestedStream.write(outChunkBuffer, length: processBytesLen)
@@ -158,9 +160,9 @@ public final class TwoFishOutputStream: OutputStream {
     public func close() throws {
         guard isOpen else { fatalError("The stream is not opened") }
         
-        let paddingLen = blockLen-inChunkBufferReadyLen
-        let inBuffer = inChunkBuffer+inChunkBufferDirtyLen
-        (inBuffer+inChunkBufferFilledLen).initialize(repeating: UInt8(paddingLen), count: paddingLen)
+        let paddingLen = blockLen - inChunkBufferReadyLen
+        let inBuffer = inChunkBuffer + inChunkBufferDirtyLen
+        (inBuffer + inChunkBufferFilledLen).initialize(repeating: UInt8(paddingLen), count: paddingLen)
         inChunkBufferAvailableLen -= paddingLen
         var block: [UInt8] = Array(repeating: 0, count: blockLen)
         for i in 0..<blockLen {
