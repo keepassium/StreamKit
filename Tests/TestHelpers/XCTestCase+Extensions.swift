@@ -10,10 +10,10 @@
 // distribute, sublicense, and/or sell copies of the Software, and to
 // permit persons to whom the Software is furnished to do so, subject to
 // the following conditions:
-// 
+//
 // The above copyright notice and this permission notice shall be
 // included in all copies or substantial portions of the Software.
-// 
+//
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
 // EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
 // MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
@@ -23,8 +23,8 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-import XCTest
 import Foundation
+import XCTest
 
 extension XCTestCase {
     func genBufferOfLen(_ len: Int) -> [UInt8] {
@@ -34,27 +34,27 @@ extension XCTestCase {
         let result = (0..<len).map { _ in UInt8.random(in: 0...UInt8.max) }
         return result
     }
-    
+
     class private var tmpFolderURL: URL {
         let url = FileManager.default.temporaryDirectory
         return url
     }
-    
+
     class private var tmpFolderStr: String {
         return tmpFolderURL.path
     }
-    
+
     class func genRandStr(_ length: Int) -> String {
         let characters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
-        let randomCharacters = (0..<length).map{ _ in characters.randomElement()! }
+        let randomCharacters = (0..<length).map { _ in characters.randomElement()! }
         let result = String(randomCharacters)
         return result
     }
-    
+
     func genRandStr(_ length: Int) -> String {
         return Self.genRandStr(length)
     }
-    
+
     class func createTmpFolder() throws -> URL {
         let randStr = genRandStr(32)
         let pathURL = tmpFolderURL.appendingPathComponent(randStr)
@@ -63,29 +63,27 @@ extension XCTestCase {
         try fm.createDirectory(atPath: path, withIntermediateDirectories: true)
         return pathURL
     }
-    
+
     class func removeTmpFolder(_ url: URL) throws {
         let fm = FileManager.default
         try fm.removeItem(at: url)
     }
-    
+
     func genTmpFileURL(_ folder: URL) -> URL {
         let fileName = genRandStr(32)
         let filePath = folder.appendingPathComponent(fileName)
         FileManager.default.createFile(atPath: filePath.path, contents: nil)
         return filePath
     }
-    
+
     func createTmpFileURL(_ folder: URL) -> URL {
         let filePath = genTmpFileURL(folder)
         FileManager.default.createFile(atPath: filePath.path, contents: nil)
         return filePath
     }
-    
+
     func fileURL(_ file: String, _ ext: String? = nil) -> URL? {
         let url = Bundle.module.url(forResource: file, withExtension: ext)!
         return url
     }
-    
-    
 }

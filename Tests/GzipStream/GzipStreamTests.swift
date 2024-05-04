@@ -10,10 +10,10 @@
 // distribute, sublicense, and/or sell copies of the Software, and to
 // permit persons to whom the Software is furnished to do so, subject to
 // the following conditions:
-// 
+//
 // The above copyright notice and this permission notice shall be
 // included in all copies or substantial portions of the Software.
-// 
+//
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
 // EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
 // MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
@@ -23,8 +23,8 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-import XCTest
 import StreamKit
+import XCTest
 
 final class GzipStreamTests: XCTestCase {
     func testCompressZeroLenBuffer() throws {
@@ -33,33 +33,33 @@ final class GzipStreamTests: XCTestCase {
         let compressedBuf = try compress(sourceBuf, len: len)
         XCTAssertTrue(compressedBuf.count > 0)
     }
-    
+
     func testComressVariousLenBuffers() throws {
         for i in 0...14 {
-            let len = 1<<i
+            let len = 1 << i
             let sourceBuf = genBufferOfLen(len)
             let compressedBuf = try compress(sourceBuf, len: len)
             XCTAssertTrue(compressedBuf.count > 0)
         }
     }
-    
+
     func testCompressDecompressZeroLenBuffer() throws {
         try compressDecompressBufferOfLen(0)
     }
-    
+
     func testCompressDecompressVariousLenBuffers() throws {
         for i in 0...14 {
-            try compressDecompressBufferOfLen(1<<i)
+            try compressDecompressBufferOfLen(1 << i)
         }
     }
-    
+
     func testCompressDecompressOddLenBuffers() throws {
         let lenOptions = [1, 15, 17, 31, 33, 63, 65, 127, 129]
         for len in lenOptions {
             try compressDecompressBufferOfLen(len)
         }
     }
-    
+
     func testCompressDecompressEmptyBufferWithVariousWindowSizes() throws {
         for windowSize in stride(from: Int32(9), to: 15, by: 1) {
             try compressDecompressBufferOfLen(
@@ -72,7 +72,7 @@ final class GzipStreamTests: XCTestCase {
             )
         }
     }
-    
+
     func disabled_testPerformanceCompressDecompress1MBFile() throws {
         self.measure {
             try! compressDecompressBufferOfLen(
@@ -96,7 +96,7 @@ extension GzipStreamTests {
     ) throws -> [UInt8] {
         let dataOutputStream = BufferOutputStream()
         try dataOutputStream.open()
-        
+
         let compressStream = GzipOutputStream(
             writingTo: dataOutputStream,
             windowBits: windowBits,
@@ -104,12 +104,12 @@ extension GzipStreamTests {
         try compressStream.open()
         try compressStream.write(buffer, length: len)
         try! compressStream.close()
-        
+
         let resultData = dataOutputStream.buffer
         dataOutputStream.close()
         return resultData
     }
-    
+
     func decompress(
         _ buffer: [UInt8],
         windowBits: Int32 = 15,
@@ -118,14 +118,14 @@ extension GzipStreamTests {
     ) throws -> [UInt8] {
         let dataInputStream = BufferInputStream(withBuffer: buffer)
         try dataInputStream.open()
-        
+
         let decompressStream = GzipInputStream(
             readingFrom: dataInputStream,
             windowBits: windowBits,
             deflateChunkSize: inChunkSize,
             inflateChunkSize: outChunkSize)
         try decompressStream.open()
-        
+
         var result = Array<UInt8>()
         let tmpBufLen = 1 << 16
         var tmpBuffer = Array<UInt8>(repeating: 0, count: tmpBufLen)
@@ -135,7 +135,7 @@ extension GzipStreamTests {
         }
         return result
     }
-    
+
     func compressDecompressBufferOfLen(_ len: Int) throws {
         let chunkSizes = [8, 32, 256, 1024]
         for chunkSize in chunkSizes {
@@ -152,9 +152,9 @@ extension GzipStreamTests {
                 }
             }
         }
-        
+
     }
-    
+
     func compressDecompressBufferOfLen(
         _ len: Int,
         windowBits: Int32 = 15,
@@ -173,5 +173,5 @@ extension GzipStreamTests {
         XCTAssertEqual(len, decompressedBuf.count)
         XCTAssertEqual(memcmp(sourceBuf, &decompressedBuf, len), 0)
     }
-    
+
 }

@@ -10,10 +10,10 @@
 // distribute, sublicense, and/or sell copies of the Software, and to
 // permit persons to whom the Software is furnished to do so, subject to
 // the following conditions:
-// 
+//
 // The above copyright notice and this permission notice shall be
 // included in all copies or substantial portions of the Software.
-// 
+//
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
 // EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
 // MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
@@ -32,7 +32,7 @@ public final class FileInputStream: InputStream {
     public init(with fileHandle: FileHandle) {
         self.fileHandle = fileHandle
     }
-    
+
     public init?(with localFileURL: URL) {
         guard let fileHandle = try? FileHandle(forReadingFrom: localFileURL) else {
             return nil
@@ -43,10 +43,10 @@ public final class FileInputStream: InputStream {
     public var hasBytesAvailable: Bool {
         return !eofReached
     }
-    
+
     public func open() throws {
     }
-    
+
     public func read(_ buffer: UnsafeMutablePointer<UInt8>, maxLength len: Int) -> Int {
         let readData = fileHandle.readData(ofLength: len)
         eofReached = (readData.count != len)
@@ -58,7 +58,7 @@ public final class FileInputStream: InputStream {
         }
         return readData.count
     }
-    
+
     public func close() throws {
         try fileHandle.close()
     }

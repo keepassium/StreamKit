@@ -10,10 +10,10 @@
 // distribute, sublicense, and/or sell copies of the Software, and to
 // permit persons to whom the Software is furnished to do so, subject to
 // the following conditions:
-// 
+//
 // The above copyright notice and this permission notice shall be
 // included in all copies or substantial portions of the Software.
-// 
+//
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
 // EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
 // MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
@@ -23,8 +23,8 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-import Foundation
 import CommonCrypto
+import Foundation
 
 public final class AesOutputStream: OutputStream {
     public static let defaultChunkSize = 1 << 15
@@ -38,7 +38,7 @@ public final class AesOutputStream: OutputStream {
     private var isOpen = false
     private var status: Int32 = 0
     private let options: AesOptions
-    
+
     public init(
         writingTo outputStream: OutputStream,
         key: [UInt8],
@@ -54,23 +54,23 @@ public final class AesOutputStream: OutputStream {
         self.key = key
         self.iv = iv
     }
-    
+
     deinit {
         outBuffer.deallocate()
     }
-    
+
     public var hasSpaceAvailable: Bool {
         return nestedStream.hasSpaceAvailable
     }
-    
+
     public func open() throws {
         guard !isOpen else { fatalError("The stream can be opened only once") }
         isOpen = true
-        
+
         guard iv.count == AesIVSize else {
             throw AesStreamError(kind: .ivSizeError)
         }
-        
+
         status = CCCryptorCreate(
             CCOperation(kCCEncrypt),
             CCAlgorithm(kCCAlgorithmAES),
@@ -84,10 +84,10 @@ public final class AesOutputStream: OutputStream {
             throw AesStreamError(code: status)
         }
     }
-    
+
     public func write(_ buffer: UnsafePointer<UInt8>, length: Int) throws {
         guard isOpen else { fatalError("The stream is not opened") }
-        
+
         var remainingLen = length
         var totalReadLen = 0
         while remainingLen > 0 {
@@ -106,7 +106,7 @@ public final class AesOutputStream: OutputStream {
             guard status == kCCSuccess else {
                 throw AesStreamError(code: status)
             }
-            
+
             if outBufCount > 0 {
                 try nestedStream.write(outBuffer, length: outBufCount)
             }
@@ -114,10 +114,10 @@ public final class AesOutputStream: OutputStream {
             remainingLen -= inBufAvailable
         }
     }
-    
+
     public func close() throws {
         guard isOpen else { fatalError("The stream is not opened") }
-        
+
         var outBufCount = 0
         status = CCCryptorFinal(
             cryptorRef,
@@ -128,11 +128,9 @@ public final class AesOutputStream: OutputStream {
         guard status == kCCSuccess else {
             throw AesStreamError(code: status)
         }
-        
+
         try nestedStream.write(outBuffer, length: outBufCount)
-        
+
         _ = CCCryptorRelease(cryptorRef)
     }
 }
-
-

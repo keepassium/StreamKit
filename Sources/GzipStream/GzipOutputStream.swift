@@ -10,10 +10,10 @@
 // distribute, sublicense, and/or sell copies of the Software, and to
 // permit persons to whom the Software is furnished to do so, subject to
 // the following conditions:
-// 
+//
 // The above copyright notice and this permission notice shall be
 // included in all copies or substantial portions of the Software.
-// 
+//
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
 // EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
 // MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
@@ -42,7 +42,8 @@ public final class GzipOutputStream: OutputStream {
     }
 
     /// - Parameters:
-    ///   - windowBits: shall be a base 2 logarithm of the maximum window size to use, and shall be a value between 9 and 15.
+    ///   - windowBits: shall be a base 2 logarithm of the maximum window size to use, 
+    ///         and shall be a value between 9 and 15.
     public init(
         writingTo nestedStream: OutputStream,
         windowBits: Int32 = MAX_WBITS + 16,
@@ -60,11 +61,11 @@ public final class GzipOutputStream: OutputStream {
     deinit {
         deflateBuffer.deallocate()
     }
-    
+
     public func open() throws {
         guard !isOpen else { fatalError("The stream can be opened only once") }
         isOpen = true
-        
+
         let zlibVersion = ZLIB_VERSION
         let streamSize = MemoryLayout<z_stream>.size
         status = deflateInit2_(
@@ -84,7 +85,7 @@ public final class GzipOutputStream: OutputStream {
 
     public func write(_ buffer: UnsafePointer<UInt8>, length: Int) throws {
         guard isOpen else { fatalError("The stream is not opened") }
-        
+
         zstream.next_in = UnsafeMutablePointer(mutating: buffer)
         zstream.avail_in = UInt32(length)
 
@@ -93,18 +94,17 @@ public final class GzipOutputStream: OutputStream {
                 repeat {
                     zstream.avail_out = UInt32(deflateBufferSize)
                     zstream.next_out = deflateBuffer
-                    
+
                     status = deflate(&zstream, Z_NO_FLUSH)
                     guard status != Z_STREAM_ERROR else {
                         throw GzipStreamError(code: status, description: zstream.msg)
                     }
-                    
+
                     let outBytesLength = deflateBufferSize - Int(zstream.avail_out)
                     try nestedStream.write(deflateBuffer, length: outBytesLength)
                 } while zstream.avail_out == 0
             }
-        }
-        catch {
+        } catch {
             deflateEnd(&zstream)
             throw error
         }
@@ -112,7 +112,7 @@ public final class GzipOutputStream: OutputStream {
 
     public func close() throws {
         guard isOpen else { fatalError("The stream is not opened") }
-        
+
         zstream.avail_in = 0
         zstream.next_in = nil
         do {
@@ -125,15 +125,13 @@ public final class GzipOutputStream: OutputStream {
                 }
                 let outBytesCount = deflateBufferSize - Int(zstream.avail_out)
                 try nestedStream.write(deflateBuffer, length: outBytesCount)
-                
+
             } while status != Z_STREAM_END
-            
+
             deflateEnd(&zstream)
-        }
-        catch {
+        } catch {
             deflateEnd(&zstream)
             throw error
         }
-
     }
 }

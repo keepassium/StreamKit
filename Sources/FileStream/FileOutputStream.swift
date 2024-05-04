@@ -10,10 +10,10 @@
 // distribute, sublicense, and/or sell copies of the Software, and to
 // permit persons to whom the Software is furnished to do so, subject to
 // the following conditions:
-// 
+//
 // The above copyright notice and this permission notice shall be
 // included in all copies or substantial portions of the Software.
-// 
+//
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
 // EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
 // MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
@@ -31,7 +31,7 @@ public final class FileOutputStream: OutputStream {
     public init(with fileHandle: FileHandle) {
         self.fileHandle = fileHandle
     }
-    
+
     public init?(with localFileURL: URL) {
         guard
             FileManager.default.createFile(atPath: localFileURL.path, contents: nil),
@@ -40,13 +40,13 @@ public final class FileOutputStream: OutputStream {
         }
         self.fileHandle = fileHandle
     }
-    
+
     public var hasSpaceAvailable: Bool {
         return true
     }
 
     public func open() throws { }
-    
+
     public func write(_ buffer: UnsafePointer<UInt8>, length: Int) throws {
         let data = Data(bytes: buffer, count: length)
         fileHandle.write(data)

@@ -10,10 +10,10 @@
 // distribute, sublicense, and/or sell copies of the Software, and to
 // permit persons to whom the Software is furnished to do so, subject to
 // the following conditions:
-// 
+//
 // The above copyright notice and this permission notice shall be
 // included in all copies or substantial portions of the Software.
-// 
+//
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
 // EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
 // MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
@@ -23,8 +23,8 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-import XCTest
 import StreamKit
+import XCTest
 
 final class BufferOutputStreamTests: XCTestCase {
     private func checkWrite(_ buffer: inout [UInt8]) throws {
@@ -34,7 +34,7 @@ final class BufferOutputStreamTests: XCTestCase {
         XCTAssertEqual(outStream.buffer, buffer)
         outStream.close()
     }
-    
+
     func testWriteDataOfLenghtUpTo_1Kb() throws {
         var array: [UInt8] = genBufferOfLen(1 << 10)
         try checkWrite(&array)

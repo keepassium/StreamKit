@@ -33,5 +33,4 @@ let package = Package(
                 .copy("Resources/PlainText.gz"),
             ]),
     ]
-    
 )

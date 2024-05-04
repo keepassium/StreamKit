@@ -10,10 +10,10 @@
 // distribute, sublicense, and/or sell copies of the Software, and to
 // permit persons to whom the Software is furnished to do so, subject to
 // the following conditions:
-// 
+//
 // The above copyright notice and this permission notice shall be
 // included in all copies or substantial portions of the Software.
-// 
+//
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
 // EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
 // MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
@@ -23,8 +23,8 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-import Foundation
 import Core
+import Foundation
 
 public final class TwoFishOutputStream: OutputStream {
     public static let defaultChunkSize = 1 << 15
@@ -40,7 +40,7 @@ public final class TwoFishOutputStream: OutputStream {
     private var inChunkBufferAvailableLen: Int
     private let blockLen = 16
     private var status: Int32 = 0
-    
+
     public init(
         writingTo outputStream: OutputStream,
         key: [UInt8],
@@ -56,38 +56,38 @@ public final class TwoFishOutputStream: OutputStream {
         self.inChunkBufferAvailableLen = chunkSize
         self.context = Twofish_key()
     }
-    
+
     deinit {
         inChunkBuffer.deallocate()
     }
-    
+
     public var hasSpaceAvailable: Bool {
         return nestedStream.hasSpaceAvailable
     }
-    
+
     public func open() throws {
         guard !isOpen else { fatalError("The stream can be opened only once") }
         isOpen = true
-        
+
         guard iv.count == TwoFishIVSize else {
             throw TwoFishStreamError(kind: .ivSizeError)
         }
-        
-        status = Twofish_initialise();
+
+        status = Twofish_initialise()
         guard status == TWOFISH_SUCCESS.rawValue else {
             throw TwoFishStreamError(code: status)
         }
-        
+
         var key = key
         status = Twofish_prepare_key(&key, Int32(key.count), &context)
         guard status == TWOFISH_SUCCESS.rawValue else {
             throw TwoFishStreamError(code: status)
         }
     }
-    
+
     public func write(_ buffer: UnsafePointer<UInt8>, length: Int) throws {
         guard isOpen else { fatalError("The stream is not opened") }
-        
+
         var remainingLen = length
         var totalReadLen = 0
         while remainingLen > 0 {
@@ -97,24 +97,24 @@ public final class TwoFishOutputStream: OutputStream {
             if try encryptChunkBuffer() == 0 { break }
         }
     }
-    
+
     private var isInChunkBufferFull: Bool {
         return inChunkBufferAvailableLen == 0
     }
-    
+
     private var inChunkBufferFilledLen: Int {
-        return chunkBufferLen-inChunkBufferAvailableLen
+        return chunkBufferLen - inChunkBufferAvailableLen
     }
-    
+
     private var inChunkBufferReadyLen: Int {
         return chunkBufferLen - inChunkBufferDirtyLen - inChunkBufferAvailableLen
     }
-    
+
     private func fillChunkBuffer(_ buffer: UnsafePointer<UInt8>, _ length: Int) -> Int  {
         if isInChunkBufferFull {
             return 0
         }
-        
+
         let numOfBlocks = min(length, inChunkBufferAvailableLen) / blockLen
         if numOfBlocks > 0 {
             let tookLen = numOfBlocks * blockLen
@@ -122,8 +122,7 @@ public final class TwoFishOutputStream: OutputStream {
             inBuf.initialize(from: buffer, count: tookLen)
             inChunkBufferAvailableLen -= tookLen
             return tookLen
-        }
-        else {
+        } else {
             let tookLen = min(length, inChunkBufferAvailableLen)
             let inBuf = inChunkBuffer + inChunkBufferFilledLen
             inBuf.initialize(from: buffer, count: tookLen)
@@ -131,7 +130,7 @@ public final class TwoFishOutputStream: OutputStream {
             return tookLen
         }
     }
-    
+
     private func encryptChunkBuffer() throws -> Int {
         let numOfBlocks = inChunkBufferReadyLen / blockLen
         let processBytesLen = numOfBlocks * blockLen
@@ -141,7 +140,7 @@ public final class TwoFishOutputStream: OutputStream {
             for n in 0..<numOfBlocks {
                 let blockStartPos = n * blockLen
                 for i in 0..<blockLen {
-                    block[i] = inBuffer[blockStartPos + i]^iv[i]
+                    block[i] = inBuffer[blockStartPos + i] ^ iv[i]
                 }
                 Twofish_encrypt(&context, &block, outChunkBuffer + blockStartPos)
                 for i in 0..<blockLen {
@@ -156,10 +155,10 @@ public final class TwoFishOutputStream: OutputStream {
         }
         return processBytesLen
     }
-    
+
     public func close() throws {
         guard isOpen else { fatalError("The stream is not opened") }
-        
+
         let paddingLen = blockLen - inChunkBufferReadyLen
         let inBuffer = inChunkBuffer + inChunkBufferDirtyLen
         (inBuffer + inChunkBufferFilledLen).initialize(repeating: UInt8(paddingLen), count: paddingLen)

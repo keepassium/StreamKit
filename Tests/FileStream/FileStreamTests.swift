@@ -10,10 +10,10 @@
 // distribute, sublicense, and/or sell copies of the Software, and to
 // permit persons to whom the Software is furnished to do so, subject to
 // the following conditions:
-// 
+//
 // The above copyright notice and this permission notice shall be
 // included in all copies or substantial portions of the Software.
-// 
+//
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
 // EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
 // MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
@@ -23,8 +23,8 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-import XCTest
 import StreamKit
+import XCTest
 
 final class FileStreamTests: XCTestCase {
     static var tmpDir: URL!
@@ -39,19 +39,19 @@ final class FileStreamTests: XCTestCase {
         let inFileHandle = try! FileHandle(forReadingFrom: inFileURL)
         let inputFileStream = FileInputStream(with: inFileHandle)
         try inputFileStream.open()
-        
+
         let outputFileURL = createTmpFileURL(Self.tmpDir)
         let fileHandle = try! FileHandle(forWritingTo: outputFileURL)
         let outputFileStream = FileOutputStream(with: fileHandle)
         try outputFileStream.open()
-                
+
         let tmpBufferLen = 1 << 16 // 65 KB buffer
         var tmpBuffer = Array<UInt8>(repeating: 0, count: tmpBufferLen)
         while inputFileStream.hasBytesAvailable {
             let readLen = inputFileStream.read(&tmpBuffer, maxLength: tmpBufferLen)
             try outputFileStream.write(tmpBuffer, length: readLen)
         }
-        
+
         try inputFileStream.close()
         try outputFileStream.close()
         XCTAssertEqual(md5(inFileURL), md5(outputFileURL))
@@ -65,12 +65,12 @@ final class FileStreamTests: XCTestCase {
 
         let tmpBufferLen = 1 << 16 // 65KB buffer
         var tmpBuffer = Array<UInt8>(repeating: 0, count: tmpBufferLen)
-        
+
         XCTAssertEqual(16, inputFileStream.read(&tmpBuffer, maxLength: 16))
         XCTAssertTrue(inputFileStream.hasBytesAvailable)
         XCTAssertEqual(0, inputFileStream.read(&tmpBuffer, maxLength: 16))
         XCTAssertFalse(inputFileStream.hasBytesAvailable)
-        
+
         try inputFileStream.close()
     }
 

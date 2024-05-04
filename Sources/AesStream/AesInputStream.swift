@@ -10,10 +10,10 @@
 // distribute, sublicense, and/or sell copies of the Software, and to
 // permit persons to whom the Software is furnished to do so, subject to
 // the following conditions:
-// 
+//
 // The above copyright notice and this permission notice shall be
 // included in all copies or substantial portions of the Software.
-// 
+//
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
 // EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
 // MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
@@ -23,8 +23,8 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-import Foundation
 import CommonCrypto
+import Foundation
 
 public final class AesInputStream: InputStream {
     public static let defaultChunkSize = 1 << 15
@@ -41,7 +41,7 @@ public final class AesInputStream: InputStream {
     private var decryptedBufferAvailableLen: Int
     private var status: Int32 = 0
     private let options: AesOptions
-    
+
     public init(
         readingFrom nestedStream: InputStream,
         key: [UInt8],
@@ -59,24 +59,24 @@ public final class AesInputStream: InputStream {
         self.decryptedBufferAvailableLen = chunkSize
         self.iv = iv
     }
-    
+
     deinit {
         encryptedBuffer.deallocate()
         decryptedBuffer.deallocate()
     }
-    
+
     public var hasBytesAvailable: Bool {
         return !eofReached || decryptedBufferReadyLen > 0
     }
-    
+
     public func open() throws {
         guard !isOpen else { fatalError("The stream can be opened only once") }
         isOpen = true
-        
+
         guard iv.count == AesIVSize else {
             throw AesStreamError(kind: .ivSizeError)
         }
-        
+
         status = CCCryptorCreate(
             CCOperation(kCCDecrypt),
             CCAlgorithm(kCCAlgorithmAES),
@@ -90,10 +90,10 @@ public final class AesInputStream: InputStream {
             throw AesStreamError(code: status)
         }
     }
-    
+
     public func read(_ outBuffer: UnsafeMutablePointer<UInt8>, maxLength: Int) throws -> Int {
         guard isOpen else { fatalError("The stream is not opened") }
-        
+
         var totalReadCount = 0
         while (maxLength - totalReadCount > 0) && hasBytesAvailable {
             try fillDecryptedBuffer()
@@ -102,21 +102,21 @@ public final class AesInputStream: InputStream {
         }
         return totalReadCount
     }
-    
+
     private var decryptedBufferReadyLen: Int {
         return bufferSize - decryptedBufferUsedLen - decryptedBufferAvailableLen
     }
-    
+
     private func fillDecryptedBuffer() throws {
         if decryptedBufferReadyLen > 0 {
             return
         }
-        
+
         let outBuf = decryptedBuffer + (bufferSize - decryptedBufferAvailableLen)
         let outAvailable = decryptedBufferAvailableLen
         var outMoved = 0
         let readLength = try nestedStream.read(encryptedBuffer, maxLength: bufferSize)
-        
+
         if readLength > 0 {
             status = CCCryptorUpdate(
                 cryptorRef,
@@ -126,8 +126,7 @@ public final class AesInputStream: InputStream {
                 outAvailable,
                 &outMoved
             )
-        }
-        else if !nestedStream.hasBytesAvailable {
+        } else if !nestedStream.hasBytesAvailable {
             eofReached = true
             status = CCCryptorFinal(
                 cryptorRef,
@@ -136,13 +135,13 @@ public final class AesInputStream: InputStream {
                 &outMoved
             )
         }
-        
+
         guard status == kCCSuccess else {
             throw AesStreamError(code: status)
         }
         decryptedBufferAvailableLen -= outMoved
     }
-    
+
     private func writeOutTo(_ outBuffer: UnsafeMutablePointer<UInt8>, count: Int) -> Int {
         let outLen = min(decryptedBufferReadyLen, count)
         outBuffer.initialize(from: decryptedBuffer + decryptedBufferUsedLen, count: outLen)
@@ -152,10 +151,10 @@ public final class AesInputStream: InputStream {
         }
         return outLen
     }
-    
+
     public func close() {
         guard isOpen else { fatalError("The stream is not opened") }
-        
+
         _ = CCCryptorRelease(cryptorRef)
     }
 }

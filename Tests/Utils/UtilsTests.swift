@@ -10,10 +10,10 @@
 // distribute, sublicense, and/or sell copies of the Software, and to
 // permit persons to whom the Software is furnished to do so, subject to
 // the following conditions:
-// 
+//
 // The above copyright notice and this permission notice shall be
 // included in all copies or substantial portions of the Software.
-// 
+//
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
 // EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
 // MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
@@ -23,13 +23,14 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-import XCTest
 import StreamKit
+import XCTest
 
 final class UtilsTests: XCTestCase {
     func testCalculatingMD5() {
         let inFileURL = fileURL("1MB")!
         XCTAssertEqual(
+            // swiftlint:disable:next comma
             [0xc7,0x2d,0xa9,0x5c,0xaa,0xf6,0x25,0xdb,0xb0,0x21,0xd7,0x2f,0x8c,0x42,0x72,0x2e],
             md5(inFileURL)
         )

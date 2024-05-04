@@ -37,7 +37,7 @@ public struct ChaCha20StreamError: LocalizedError {
     public let file: String
     public let line: Int
     public let kind: Kind
-    
+
     internal init(file: String = #file, line: Int = #line, kind: Kind) {
         self.file = String(describing: file)
         self.line = line

@@ -10,10 +10,10 @@
 // distribute, sublicense, and/or sell copies of the Software, and to
 // permit persons to whom the Software is furnished to do so, subject to
 // the following conditions:
-// 
+//
 // The above copyright notice and this permission notice shall be
 // included in all copies or substantial portions of the Software.
-// 
+//
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
 // EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
 // MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
@@ -29,7 +29,7 @@ import zlib
 public final class GzipInputStream: InputStream {
     public static let defaultDeflateChunkSize = 1 << 15
     public static let defaultInflateChunkSize = 1 << 15
-    
+
     private var zstream: z_stream
     private let nestedStream: InputStream
     private let inflateBufferSize: Int
@@ -43,11 +43,11 @@ public final class GzipInputStream: InputStream {
     private var status: Int32 = Z_OK
     private var windowBits: Int32
 
-    
     /// - Parameters:
     ///   - nestedStream:
-    ///   - windowBits: shall be a base 2 logarithm of the maximum window size to use, and shall be a value between 9 and 15.
-    ///         If the input data was compressed with a larger window size, subsequent attempts to decompress this data will fail
+    ///   - windowBits: shall be a base 2 logarithm of the maximum window size to use, 
+    ///         and shall be a value between 9 and 15. If the input data was compressed
+    ///         with a larger window size, subsequent attempts to decompress this data will fail
     ///         with `Z_DATA_ERROR`, rather than try to allocate a larger window.
     ///   - deflateChunkSize:
     ///   - inflateChunkSize:
@@ -73,15 +73,15 @@ public final class GzipInputStream: InputStream {
         deflateBuffer.deallocate()
         inflateBuffer.deallocate()
     }
-    
+
     public func open() throws {
         guard !isOpen else { fatalError("The stream can be opened only once") }
         isOpen = true
-        
+
         let streamSize = Int32(MemoryLayout<z_stream>.size)
         let zlibVersion = ZLIB_VERSION
         status = inflateInit2_(&zstream, windowBits, zlibVersion, streamSize)
-        
+
         guard status == Z_OK else {
             throw GzipStreamError(code: status, description: zstream.msg)
         }
@@ -94,18 +94,18 @@ public final class GzipInputStream: InputStream {
     public var hasBytesAvailable: Bool {
         return !eofReached || bytesReadyToRead > 0
     }
-    
+
     private var bytesReadyToRead: Int {
         return inflateBufferSize - inflateUsedLen - inflateAvailableLen
     }
-    
+
     private var isInflateBufferFull: Bool {
         return inflateAvailableLen == 0
     }
 
     public func read(_ outBuffer: UnsafeMutablePointer<UInt8>, maxLength: Int) throws -> Int {
         guard isOpen else { fatalError("The stream is not opened") }
-        
+
         var totalReadLen = 0
         var remainingLen = maxLength
         while remainingLen > 0 && hasBytesAvailable {
@@ -116,7 +116,7 @@ public final class GzipInputStream: InputStream {
         }
         return totalReadLen
     }
-    
+
     private func copyReadyBytesTo(_ outBuffer: UnsafeMutablePointer<UInt8>, count: Int) -> Int {
         let outLen = min(bytesReadyToRead, count)
         outBuffer.initialize(from: inflateBuffer + inflateUsedLen, count: outLen)
@@ -134,19 +134,19 @@ public final class GzipInputStream: InputStream {
 
         zstream.next_out = (inflateBuffer + inflateBufferSize - inflateAvailableLen)
         zstream.avail_out = uInt(inflateAvailableLen)
-        
+
         if zstream.avail_in == 0 {
             let readLen = try nestedStream.read(deflateBuffer, maxLength: deflateBufferSize)
             zstream.next_in = deflateBuffer
             zstream.avail_in = uInt(readLen)
-            
+
             if readLen == 0 {
                 eofReached = true
                 try finalizeInflate()
                 return
             }
         }
-        
+
         status = inflate(&zstream, Z_NO_FLUSH)
         if status == Z_STREAM_END {
             eofReached = true
@@ -157,18 +157,17 @@ public final class GzipInputStream: InputStream {
         }
         inflateAvailableLen = Int(zstream.avail_out)
     }
-    
+
     private func finalizeInflate() throws {
         status = inflateEnd(&zstream)
         if status != Z_OK {
             throw GzipStreamError(code: status, description: zstream.msg)
         }
     }
-    
+
     public func close() throws {
         guard isOpen else { fatalError("The stream is not opened") }
         _ = inflateEnd(&zstream)
         try nestedStream.close()
     }
 }
-

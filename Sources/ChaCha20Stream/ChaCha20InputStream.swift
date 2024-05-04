@@ -10,10 +10,10 @@
 // distribute, sublicense, and/or sell copies of the Software, and to
 // permit persons to whom the Software is furnished to do so, subject to
 // the following conditions:
-// 
+//
 // The above copyright notice and this permission notice shall be
 // included in all copies or substantial portions of the Software.
-// 
+//
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
 // EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
 // MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
@@ -23,8 +23,8 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-import Foundation
 import Core
+import Foundation
 
 public final class ChaCha20InputStream: InputStream {
     public static let defaultChunkSize = 1 << 15
@@ -42,7 +42,7 @@ public final class ChaCha20InputStream: InputStream {
     private var decryptedBufferAvailableLen: Int
     private var context = CHACHA20_ctx()
     private let blockLen: Int = Int(CHACHA20_BLOCKLENGTH)
-    
+
     public init(
         readingFrom nestedStream: InputStream,
         key: [UInt8],
@@ -58,30 +58,30 @@ public final class ChaCha20InputStream: InputStream {
         self.encryptedBufferAvailableLen = chunkSize
         self.iv = iv
     }
-    
+
     deinit {
         encryptedBuffer.deallocate()
         decryptedBuffer.deallocate()
     }
-    
+
     public var hasBytesAvailable: Bool {
         return !eofReached || encryptedBufferReadyLen > 0 || decryptedBufferReadyLen > 0
     }
-    
+
     public func open() throws {
         guard !isOpen else { fatalError("The stream can be opened only once") }
         isOpen = true
-        
+
         guard key.count == ChaCha20KeySize else {
             throw ChaCha20StreamError(kind: .keySizeError)
         }
-        
+
         guard iv.count == ChaCha20IVSize else {
             throw ChaCha20StreamError(kind: .ivSizeError)
         }
-        
-        CHACHA20_init();
-        
+
+        CHACHA20_init()
+
         let keySize = key.count
         let ivSize = iv.count
         key.withUnsafeBufferPointer { keyubp in
@@ -91,18 +91,17 @@ public final class ChaCha20InputStream: InputStream {
             CHACHA20_ivsetup(&context, ivubp.baseAddress!)
         }
     }
-    
+
     public func read(_ outBuffer: UnsafeMutablePointer<UInt8>, maxLength: Int) throws -> Int {
         guard isOpen else { fatalError("The stream is not opened") }
-        
+
         var totalReadCount = 0
         var remainingLen = maxLength
         while remainingLen > 0 && hasBytesAvailable {
             try fillEncryptedBuffer()
             if nestedStream.hasBytesAvailable {
                 try decryptBlocks()
-            }
-            else {
+            } else {
                 try decryptRemaining()
             }
             let readCount = writeOutTo(outBuffer + totalReadCount, count: remainingLen)
@@ -112,24 +111,24 @@ public final class ChaCha20InputStream: InputStream {
         }
         return totalReadCount
     }
-    
+
     private var encryptedBufferReadyLen: Int {
         return bufferSize - encryptedBufferDirtyLen - encryptedBufferAvailableLen
     }
-    
+
     private var encryptedBufferFilledLen: Int {
         return bufferSize - encryptedBufferAvailableLen
     }
-    
+
     private var isEncryptedBufferFull: Bool {
         return encryptedBufferAvailableLen == 0
     }
-    
+
     private func fillEncryptedBuffer() throws {
         if eofReached || isEncryptedBufferFull {
             return
         }
-        
+
         let canTake = encryptedBufferAvailableLen / blockLen * blockLen
         let inBuf = encryptedBuffer + encryptedBufferFilledLen
         let readLen = try nestedStream.read(inBuf, maxLength: canTake)
@@ -138,21 +137,20 @@ public final class ChaCha20InputStream: InputStream {
         }
         encryptedBufferAvailableLen -= readLen
     }
-    
-    
+
     private var decryptedBufferReadyLen: Int {
         return bufferSize - decryptedBufferDirtyLen - decryptedBufferAvailableLen
     }
-    
+
     private var decryptedBufferFilledLen: Int {
         return bufferSize - decryptedBufferAvailableLen
     }
-    
+
     private func decryptBlocks() throws {
         if decryptedBufferReadyLen > blockLen {
             return
         }
-        
+
         let inBufAvailable = encryptedBufferReadyLen
         let outBufAvailable = decryptedBufferAvailableLen
         let numOfBlocks = min(inBufAvailable, outBufAvailable) / blockLen
@@ -168,7 +166,7 @@ public final class ChaCha20InputStream: InputStream {
             decryptedBufferAvailableLen -= processBytesLen
         }
     }
-    
+
     private func decryptRemaining() throws {
         let inBufAvailable = encryptedBufferReadyLen
         let outBufAvailable = decryptedBufferAvailableLen
@@ -180,7 +178,7 @@ public final class ChaCha20InputStream: InputStream {
             decryptedBufferAvailableLen -= inBufAvailable
         }
     }
-    
+
     private func writeOutTo(_ outBuffer: UnsafeMutablePointer<UInt8>, count: Int) -> Int {
         let outLen = min(decryptedBufferReadyLen, count)
         if outLen > 0 {
@@ -192,6 +190,6 @@ public final class ChaCha20InputStream: InputStream {
         }
         return outLen
     }
-    
+
     public func close() { }
 }

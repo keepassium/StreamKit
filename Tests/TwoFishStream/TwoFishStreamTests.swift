@@ -10,10 +10,10 @@
 // distribute, sublicense, and/or sell copies of the Software, and to
 // permit persons to whom the Software is furnished to do so, subject to
 // the following conditions:
-// 
+//
 // The above copyright notice and this permission notice shall be
 // included in all copies or substantial portions of the Software.
-// 
+//
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
 // EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
 // MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
@@ -23,8 +23,8 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-import XCTest
 import StreamKit
+import XCTest
 
 final class TwoFishStreamTests: XCTestCase {
     func testForWrongKey() {
@@ -34,7 +34,7 @@ final class TwoFishStreamTests: XCTestCase {
         let iv = genBufferOfLen(16)
         XCTAssertThrowsError(try encrypt(sourceBuf, len: sourceBufLen, key: key, iv: iv))
     }
-    
+
     func testForWrongIV() {
         let sourceBufLen = 128
         let sourceBuf = genBufferOfLen(sourceBufLen)
@@ -42,7 +42,7 @@ final class TwoFishStreamTests: XCTestCase {
         let iv = genBufferOfLen(13)
         XCTAssertThrowsError(try encrypt(sourceBuf, len: sourceBufLen, key: key, iv: iv))
     }
-    
+
     func testEncryptZeroLenBuffer() throws {
         let sourceBufLen = 0
         let sourceBuf = genBufferOfLen(sourceBufLen)
@@ -51,7 +51,7 @@ final class TwoFishStreamTests: XCTestCase {
         let encryptedBuf = try encrypt(sourceBuf, len: sourceBufLen, key: key, iv: iv)
         XCTAssertEqual(16, encryptedBuf.count)
     }
-    
+
     func testEncrypt16Bytes() throws {
         let sourceBufLen = 16
         let sourceBuf = genBufferOfLen(sourceBufLen)
@@ -60,7 +60,7 @@ final class TwoFishStreamTests: XCTestCase {
         let encryptedBuf = try encrypt(sourceBuf, len: sourceBufLen, key: key, iv: iv)
         XCTAssertEqual(32, encryptedBuf.count)
     }
-    
+
     func testEncrypt16BytesWithChunk16Bytes() throws {
         let sourceBufLen = 16
         let sourceBuf = genBufferOfLen(sourceBufLen)
@@ -69,7 +69,7 @@ final class TwoFishStreamTests: XCTestCase {
         let encryptedBuf = try encrypt(sourceBuf, len: sourceBufLen, key: key, iv: iv, chunkSize: 16)
         XCTAssertEqual(32, encryptedBuf.count)
     }
-    
+
     func testEncrypt63Bytes() throws {
         let sourceBufLen = 63
         let sourceBuf = genBufferOfLen(sourceBufLen)
@@ -79,7 +79,7 @@ final class TwoFishStreamTests: XCTestCase {
         XCTAssertEqual(64, encryptedBuf.count)
         XCTAssertNotEqual(sourceBuf, encryptedBuf)
     }
-    
+
     func testEncrypt64Bytes() throws {
         let sourceBufLen = 64
         let sourceBuf = genBufferOfLen(sourceBufLen)
@@ -89,7 +89,7 @@ final class TwoFishStreamTests: XCTestCase {
         XCTAssertEqual(80, encryptedBuf.count)
         XCTAssertNotEqual(sourceBuf, encryptedBuf)
     }
-    
+
     func testEncrypt65Bytes() throws {
         let sourceBufLen = 65
         let sourceBuf = genBufferOfLen(sourceBufLen)
@@ -99,7 +99,7 @@ final class TwoFishStreamTests: XCTestCase {
         XCTAssertEqual(80, encryptedBuf.count)
         XCTAssertNotEqual(sourceBuf, encryptedBuf)
     }
-    
+
     func testEncrypt127Bytes() throws {
         let sourceBufLen = 127
         let sourceBuf = genBufferOfLen(sourceBufLen)
@@ -109,7 +109,7 @@ final class TwoFishStreamTests: XCTestCase {
         XCTAssertEqual(128, encryptedBuf.count)
         XCTAssertNotEqual(sourceBuf, encryptedBuf)
     }
-    
+
     func testEncrypt128Bytes() throws {
         let sourceBufLen = 128
         let sourceBuf = genBufferOfLen(sourceBufLen)
@@ -119,7 +119,7 @@ final class TwoFishStreamTests: XCTestCase {
         XCTAssertEqual(144, encryptedBuf.count)
         XCTAssertNotEqual(sourceBuf, encryptedBuf)
     }
-    
+
     func testEncrypt256Bytes() throws {
         let sourceBufLen = 256
         let sourceBuf = genBufferOfLen(sourceBufLen)
@@ -129,47 +129,47 @@ final class TwoFishStreamTests: XCTestCase {
         XCTAssertEqual(272, encryptedBuf.count)
         XCTAssertNotEqual(sourceBuf, encryptedBuf)
     }
-    
+
     func testEncryptDecryptZeroLenBuffer() throws {
         try encryptDecryptBufferOfLen(bufLen: 0, keyLen: 32)
     }
-    
+
     func testEncryptDecrypt16Bytes() throws {
         try encryptDecryptBufferOfLen(bufLen: 16, keyLen: 32)
     }
-    
+
     func testEncryptDecrypt16BytesWithChunk16Bytes() throws {
         try encryptDecryptBufferOfLen(bufLen: 16, keyLen: 32, chunkSize: 16)
     }
-    
+
     func testEncryptDecrypt17BytesWithChunk16Bytes() throws {
         try encryptDecryptBufferOfLen(bufLen: 17, keyLen: 32)
     }
-    
+
     func testEncryptDecrypt32BytesWithChunk16Bytes() throws {
         try encryptDecryptBufferOfLen(bufLen: 32, keyLen: 32, chunkSize: 16)
     }
-    
+
     func testEncryptDecrypt64Bytes() throws {
         try encryptDecryptBufferOfLen(bufLen: 64, keyLen: 32)
     }
-    
+
     func testEncryptDecrypt65Bytes() throws {
         try encryptDecryptBufferOfLen(bufLen: 65, keyLen: 32)
     }
-    
+
     func testEncryptDecrypt192Bytes() throws {
         try encryptDecryptBufferOfLen(bufLen: 192, keyLen: 32)
     }
-    
+
     func testEncryptDecrypt1024Bytes_2() throws {
         try encryptDecryptBufferOfLen(bufLen: 127, keyLen: 32)
     }
-    
+
     func testEncryptDecrypt128Bytes() throws {
         try encryptDecryptBufferOfLen(bufLen: 128, keyLen: 32)
     }
-    
+
     func testEncryptVariousLenBuffers() throws {
         for pow in 0...14 {
             let sourceBufLen = 1 << pow
@@ -182,13 +182,13 @@ final class TwoFishStreamTests: XCTestCase {
             XCTAssertNotEqual(sourceBuf, encryptedBuf)
         }
     }
-    
+
     func testEncryptDecryptVariousLenBuffers() throws {
         for pow in 0...14 {
             try encryptDecryptBufferOfLen(1 << pow)
         }
     }
-    
+
     func disabled_testPerformanceEncryptDecrypt1MBFile() throws {
         self.measure {
             try! encryptDecryptBufferOfLen(1 << 20)
@@ -206,7 +206,7 @@ extension TwoFishStreamTests {
     ) throws -> [UInt8] {
         let dataOutputStream = BufferOutputStream()
         try dataOutputStream.open()
-        
+
         let encryptingStream = TwoFishOutputStream(
             writingTo: dataOutputStream,
             key: key,
@@ -215,12 +215,12 @@ extension TwoFishStreamTests {
         try encryptingStream.open()
         try encryptingStream.write(buffer, length: len)
         try encryptingStream.close()
-        
+
         let resultData = dataOutputStream.buffer
         dataOutputStream.close()
         return resultData
     }
-    
+
     func decrypt(
         buffer: [UInt8],
         key: [UInt8],
@@ -229,13 +229,13 @@ extension TwoFishStreamTests {
     ) throws -> [UInt8] {
         let dataInputStream = BufferInputStream(withBuffer: buffer)
         try dataInputStream.open()
-        
+
         let decryptingStream = TwoFishInputStream(
             readingFrom: dataInputStream,
             key: key, iv: iv,
             chunkSize: chunkSize)
         try decryptingStream.open()
-        
+
         var decryptedBytes = [UInt8]()
         let tmpBufferLen = 1 << 16
         var tmpBuffer = Array<UInt8>(repeating: 0, count: tmpBufferLen)
@@ -245,7 +245,7 @@ extension TwoFishStreamTests {
         }
         return decryptedBytes
     }
-    
+
     func encryptDecryptBufferOfLen(_ bufLen: Int) throws {
         let chunkSizeOptions = [64, 65, 127, 128, 129, 512, 1023, 1024]
         for keyLen in 1...32 {
@@ -254,7 +254,7 @@ extension TwoFishStreamTests {
             }
         }
     }
-    
+
     func encryptDecryptBufferOfLen(
         bufLen: Int,
         keyLen: Int,
