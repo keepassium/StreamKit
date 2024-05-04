@@ -26,7 +26,7 @@
 import Core
 import Foundation
 
-public final class TwoFishOutputStream: OutputStream {
+public final class TwofishOutputStream: OutputStream {
     public static let defaultChunkSize = 1 << 15
     private var inChunkBuffer: UnsafeMutablePointer<UInt8>
     private var outChunkBuffer: UnsafeMutablePointer<UInt8>
@@ -45,7 +45,7 @@ public final class TwoFishOutputStream: OutputStream {
         writingTo outputStream: OutputStream,
         key: [UInt8],
         iv: [UInt8],
-        chunkSize: Int = TwoFishOutputStream.defaultChunkSize
+        chunkSize: Int = TwofishOutputStream.defaultChunkSize
     ) {
         self.nestedStream = outputStream
         self.inChunkBuffer = UnsafeMutablePointer.allocate(capacity: chunkSize)
@@ -69,19 +69,19 @@ public final class TwoFishOutputStream: OutputStream {
         guard !isOpen else { fatalError("The stream can be opened only once") }
         isOpen = true
 
-        guard iv.count == TwoFishIVSize else {
-            throw TwoFishStreamError(kind: .ivSizeError)
+        guard iv.count == TwofishIVSize else {
+            throw TwofishStreamError(kind: .ivSizeError)
         }
 
         status = Twofish_initialise()
         guard status == TWOFISH_SUCCESS.rawValue else {
-            throw TwoFishStreamError(code: status)
+            throw TwofishStreamError(code: status)
         }
 
         var key = key
         status = Twofish_prepare_key(&key, Int32(key.count), &context)
         guard status == TWOFISH_SUCCESS.rawValue else {
-            throw TwoFishStreamError(code: status)
+            throw TwofishStreamError(code: status)
         }
     }
 

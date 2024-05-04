@@ -26,7 +26,7 @@
 import StreamKit
 import XCTest
 
-final class TwoFishStreamTests: XCTestCase {
+final class TwofishStreamTests: XCTestCase {
     func testForWrongKey() {
         let sourceBufLen = 128
         let sourceBuf = genBufferOfLen(sourceBufLen)
@@ -196,18 +196,18 @@ final class TwoFishStreamTests: XCTestCase {
     }
 }
 
-extension TwoFishStreamTests {
+extension TwofishStreamTests {
     func encrypt(
         _ buffer: UnsafePointer<UInt8>,
         len: Int,
         key: [UInt8],
         iv: [UInt8],
-        chunkSize: Int = TwoFishOutputStream.defaultChunkSize
+        chunkSize: Int = TwofishOutputStream.defaultChunkSize
     ) throws -> [UInt8] {
         let dataOutputStream = BufferOutputStream()
         try dataOutputStream.open()
 
-        let encryptingStream = TwoFishOutputStream(
+        let encryptingStream = TwofishOutputStream(
             writingTo: dataOutputStream,
             key: key,
             iv: iv,
@@ -225,12 +225,12 @@ extension TwoFishStreamTests {
         buffer: [UInt8],
         key: [UInt8],
         iv: [UInt8],
-        chunkSize: Int = TwoFishInputStream.defaultChunkSize
+        chunkSize: Int = TwofishInputStream.defaultChunkSize
     ) throws -> [UInt8] {
         let dataInputStream = BufferInputStream(withBuffer: buffer)
         try dataInputStream.open()
 
-        let decryptingStream = TwoFishInputStream(
+        let decryptingStream = TwofishInputStream(
             readingFrom: dataInputStream,
             key: key, iv: iv,
             chunkSize: chunkSize)
@@ -258,7 +258,7 @@ extension TwoFishStreamTests {
     func encryptDecryptBufferOfLen(
         bufLen: Int,
         keyLen: Int,
-        chunkSize: Int = TwoFishOutputStream.defaultChunkSize
+        chunkSize: Int = TwofishOutputStream.defaultChunkSize
     ) throws {
         let sourceBuf = genBufferOfLen(bufLen)
         let key = genBufferOfLen(keyLen)

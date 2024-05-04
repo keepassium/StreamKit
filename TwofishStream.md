@@ -14,7 +14,7 @@ let iv: [UInt8] = Array(repeating: 0, count: 16) // 128 bits length initilizatio
 
 ## Create output(encrypting) stream
 ```swift
-let encryptingStream = TwoFishOutputStream(writingTo: anotherOutputStream,
+let encryptingStream = TwofishOutputStream(writingTo: anotherOutputStream,
                                             key: key,
                                             iv: iv,
                                             chunkSize: chunkSize)
@@ -25,7 +25,7 @@ try encryptingStream.close()
 
 ## Create input(decrypting) stream
 ```swift
-let decryptingStream = TwoFishInputStream(readingFrom: anotherInputStream,
+let decryptingStream = TwofishInputStream(readingFrom: anotherInputStream,
                                           key: key,
                                           iv: iv,
                                           chunkSize: chunkSize)

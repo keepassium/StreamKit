@@ -26,7 +26,7 @@
 import Core
 import Foundation
 
-public final class TwoFishInputStream: InputStream {
+public final class TwofishInputStream: InputStream {
     public static let defaultChunkSize = 1 << 15
     private let nestedStream: InputStream
     private let bufferSize: Int
@@ -48,7 +48,7 @@ public final class TwoFishInputStream: InputStream {
         readingFrom nestedStream: InputStream,
         key: [UInt8],
         iv: [UInt8],
-        chunkSize: Int = TwoFishInputStream.defaultChunkSize
+        chunkSize: Int = TwofishInputStream.defaultChunkSize
     ) {
         self.nestedStream = nestedStream
         self.key = key
@@ -74,19 +74,19 @@ public final class TwoFishInputStream: InputStream {
         guard !isOpen else { fatalError("The stream can be opened only once") }
         isOpen = true
 
-        guard iv.count == TwoFishIVSize else {
-            throw TwoFishStreamError(kind: .ivSizeError)
+        guard iv.count == TwofishIVSize else {
+            throw TwofishStreamError(kind: .ivSizeError)
         }
 
         status = Twofish_initialise()
         guard status == TWOFISH_SUCCESS.rawValue else {
-            throw TwoFishStreamError(code: status)
+            throw TwofishStreamError(code: status)
         }
 
         var key = key
         status = Twofish_prepare_key(&key, Int32(key.count), &context)
         guard status == TWOFISH_SUCCESS.rawValue else {
-            throw TwoFishStreamError(code: status)
+            throw TwofishStreamError(code: status)
         }
     }
 
@@ -193,7 +193,7 @@ public final class TwoFishInputStream: InputStream {
             }
 
             guard encryptedBufferReadyLen % blockLen == 0 else {
-                throw TwoFishStreamError(kind: .dataNotAligned)
+                throw TwofishStreamError(kind: .dataNotAligned)
             }
 
             if !nestedStream.hasBytesAvailable && encryptedBufferReadyLen == 0 {

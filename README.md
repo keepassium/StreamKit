@@ -7,7 +7,7 @@ This open-source Swift library offers a comprehensive collection of cryptographi
 - [AESStream](AESStream.md)
 - [Salsa20Stream](Salsa20Stream.md)
 - [ChaCha20Stream](ChaCha20Stream.md)
-- [TwoFishStream](TwoFishStream.md)
+- [TwofishStream](TwofishStream.md)
 
 # How to add the library to a project
 In the Xcode press `File` -> `Add Packages` -> In the search field insert `https://github.com/iharkatkavets/StreamKit.git`.
@@ -149,10 +149,10 @@ decryptingStream.close()
 ```
 
 
-## How to perform encrypting using `TwoFishOutputStream`
+## How to perform encrypting using `TwofishOutputStream`
 ```swift
 ...
-let encryptingStream = TwoFishOutputStream(writingTo: fileOutputStream,
+let encryptingStream = TwofishOutputStream(writingTo: fileOutputStream,
                                                    key: key,
                                                    iv: iv)
 try encryptingStream.open()
@@ -162,10 +162,10 @@ try encryptingStream.close()
 ...
 ```
 
-## How to perform decrypting using `TwoFishInputStream`
+## How to perform decrypting using `TwofishInputStream`
 ```swift
 ...
-let decryptingStream = TwoFishInputStream(readingFrom: inputFileStream,
+let decryptingStream = TwofishInputStream(readingFrom: inputFileStream,
                                               key: key,
                                               iv: iv)
 try decryptingStream.open()
