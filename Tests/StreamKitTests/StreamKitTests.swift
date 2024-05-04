@@ -216,7 +216,6 @@ extension StreamKitTests {
     func compressAndEncryptFileUsingSalsa20(_ originalFileURL: URL, _ key: [UInt8], _ iv: [UInt8]) throws -> URL {
         let inputFileStream = FileInputStream(with: try! FileHandle(forReadingFrom: originalFileURL))
         try inputFileStream.open()
-        try inputFileStream.close()
 
         let encryptedFileURL = createTmpFileURL(Self.tmpDir)
         let outputFileStream = FileOutputStream(with: try! FileHandle(forWritingTo: encryptedFileURL))
@@ -415,7 +414,6 @@ extension StreamKitTests {
     func compressAndEncryptFileUsingAes(_ originalFileURL: URL, _ key: [UInt8], _ iv: [UInt8]) throws -> URL {
         let inputFileStream = FileInputStream(with: try! FileHandle(forReadingFrom: originalFileURL))
         try inputFileStream.open()
-        try inputFileStream.close()
 
         let encryptedFileURL = createTmpFileURL(Self.tmpDir)
         let outputFileStream = FileOutputStream(with: try! FileHandle(forWritingTo: encryptedFileURL))
@@ -604,7 +602,6 @@ extension StreamKitTests {
     func compressAndEncryptFileUsingTwoFish(_ originalFileURL: URL, _ key: [UInt8], _ iv: [UInt8]) throws -> URL {
         let inputFileStream = FileInputStream(with: try! FileHandle(forReadingFrom: originalFileURL))
         try inputFileStream.open()
-        try inputFileStream.close()
 
         let encryptedFileURL = createTmpFileURL(Self.tmpDir)
         let outputFileStream = FileOutputStream(with: try! FileHandle(forWritingTo: encryptedFileURL))
