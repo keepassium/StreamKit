@@ -32,7 +32,13 @@ final class AESStreamTests: XCTestCase {
         let sourceBuf = genBufferOfLen(sourceBufLen)
         let key = genBufferOfLen(31)
         let iv = genBufferOfLen(8)
-        XCTAssertThrowsError(try encrypt(sourceBuf, len: sourceBufLen, key: key, iv: iv))
+        XCTAssertThrowsError(try encrypt(sourceBuf, len: sourceBufLen, key: key, iv: iv)) { error in
+            guard let aesError = error as? AESStreamError else {
+                XCTFail("Unexpected error type")
+                return
+            }
+            XCTAssertEqual(aesError.kind, .keySizeError)
+        }
     }
 
     func testForWrongIV() {
@@ -40,7 +46,13 @@ final class AESStreamTests: XCTestCase {
         let sourceBuf = genBufferOfLen(sourceBufLen)
         let key = genBufferOfLen(32)
         let iv = genBufferOfLen(7)
-        XCTAssertThrowsError(try encrypt(sourceBuf, len: sourceBufLen, key: key, iv: iv))
+        XCTAssertThrowsError(try encrypt(sourceBuf, len: sourceBufLen, key: key, iv: iv)) { error in
+            guard let aesError = error as? AESStreamError else {
+                XCTFail("Unexpected error type")
+                return
+            }
+            XCTAssertEqual(aesError.kind, .ivSizeError)
+        }
     }
 
     func testEncryptZeroLenBuffer() throws {
@@ -70,7 +82,13 @@ final class AESStreamTests: XCTestCase {
         let keyLenOptions = (0...15).map { $0 }
         for keyLen in keyLenOptions {
             let key = genBufferOfLen(keyLen)
-            XCTAssertThrowsError(try encrypt(sourceBuf, len: sourceBufLen, key: key, iv: iv))
+            XCTAssertThrowsError(try encrypt(sourceBuf, len: sourceBufLen, key: key, iv: iv)) { error in
+                guard let aesError = error as? AESStreamError else {
+                    XCTFail("Unexpected error type")
+                    return
+                }
+                XCTAssertEqual(aesError.kind, .keySizeError)
+            }
         }
     }
 

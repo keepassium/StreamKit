@@ -32,7 +32,13 @@ final class Salsa20CryptorTests: XCTestCase {
         let sourceBuf = genBufferOfLen(sourceBufLen)
         let key = genBufferOfLen(16)
         let iv = genBufferOfLen(16)
-        XCTAssertThrowsError(try encrypt(sourceBuf, len: sourceBufLen, key: key, iv: iv))
+        XCTAssertThrowsError(try encrypt(sourceBuf, len: sourceBufLen, key: key, iv: iv)) { error in
+            guard let salsaError = error as? Salsa20StreamError else {
+                XCTFail("Unexpected error type")
+                return
+            }
+            XCTAssertEqual(salsaError.kind, .keySizeError)
+        }
     }
 
     func testEncryptZeroLenBuffer() throws {

@@ -28,7 +28,7 @@ import Foundation
 public let TwofishIVSize = 16
 
 public struct TwofishStreamError: LocalizedError {
-    public enum Kind {
+    public enum Kind: Equatable {
         case fillKeyedSBoxes
         case notInitialized
         case illegalKeyLength

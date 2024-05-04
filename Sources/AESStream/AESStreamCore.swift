@@ -36,7 +36,7 @@ public extension AESOptions {
 }
 
 public struct AESStreamError: LocalizedError {
-    public enum Kind {
+    public enum Kind: Equatable {
         case paramError
         case bufferTooSmall
         case memoryFailure

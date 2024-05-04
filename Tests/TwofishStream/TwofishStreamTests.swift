@@ -32,7 +32,13 @@ final class TwofishStreamTests: XCTestCase {
         let sourceBuf = genBufferOfLen(sourceBufLen)
         let key = genBufferOfLen(33)
         let iv = genBufferOfLen(16)
-        XCTAssertThrowsError(try encrypt(sourceBuf, len: sourceBufLen, key: key, iv: iv))
+        XCTAssertThrowsError(try encrypt(sourceBuf, len: sourceBufLen, key: key, iv: iv)) { error in
+            guard let tfError = error as? TwofishStreamError else {
+                XCTFail("Unexpected error type")
+                return
+            }
+            XCTAssertEqual(tfError.kind, .keySizeError)
+        }
     }
 
     func testForWrongIV() {
@@ -40,7 +46,13 @@ final class TwofishStreamTests: XCTestCase {
         let sourceBuf = genBufferOfLen(sourceBufLen)
         let key = genBufferOfLen(32)
         let iv = genBufferOfLen(13)
-        XCTAssertThrowsError(try encrypt(sourceBuf, len: sourceBufLen, key: key, iv: iv))
+        XCTAssertThrowsError(try encrypt(sourceBuf, len: sourceBufLen, key: key, iv: iv)) { error in
+            guard let tfError = error as? TwofishStreamError else {
+                XCTFail("Unexpected error type")
+                return
+            }
+            XCTAssertEqual(tfError.kind, .ivSizeError)
+        }
     }
 
     func testEncryptZeroLenBuffer() throws {

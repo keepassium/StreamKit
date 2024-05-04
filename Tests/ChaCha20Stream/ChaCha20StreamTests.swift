@@ -32,7 +32,13 @@ final class ChaCha20StreamTests: XCTestCase {
         let sourceBuf = genBufferOfLen(sourceBufLen)
         let key = genBufferOfLen(16)
         let iv = genBufferOfLen(12)
-        XCTAssertThrowsError(try encrypt(sourceBuf, len: sourceBufLen, key: key, iv: iv))
+        XCTAssertThrowsError(try encrypt(sourceBuf, len: sourceBufLen, key: key, iv: iv)) { error in
+            guard let chaError = error as? ChaCha20StreamError else {
+                XCTFail("Unexpected error type")
+                return
+            }
+            XCTAssertEqual(chaError.kind, .keySizeError)
+        }
     }
 
     func testForWrongIV() {
@@ -40,7 +46,13 @@ final class ChaCha20StreamTests: XCTestCase {
         let sourceBuf = genBufferOfLen(sourceBufLen)
         let key = genBufferOfLen(32)
         let iv = genBufferOfLen(13)
-        XCTAssertThrowsError(try encrypt(sourceBuf, len: sourceBufLen, key: key, iv: iv))
+        XCTAssertThrowsError(try encrypt(sourceBuf, len: sourceBufLen, key: key, iv: iv)) { error in
+            guard let chaError = error as? ChaCha20StreamError else {
+                XCTFail("Unexpected error type")
+                return
+            }
+            XCTAssertEqual(chaError.kind, .ivSizeError)
+        }
     }
 
     func testEncryptZeroLenBuffer() throws {
